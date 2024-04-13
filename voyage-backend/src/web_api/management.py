@@ -1,5 +1,5 @@
 import flask
-from src import runner
+from ...src import runner
 from waitress import serve
 
 mng = flask.Flask(__name__)
