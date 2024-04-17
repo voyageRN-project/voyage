@@ -2,8 +2,8 @@ import traceback
 
 from flask import Flask, request, Response
 from waitress import serve
-from ...src.services.user_service import UserService
-from ...src.helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty
+from services.user_service import UserService
+from helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty
 import logging as logger
 
 logger.basicConfig(level=logger.INFO)

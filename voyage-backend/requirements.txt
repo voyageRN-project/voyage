@@ -1,2 +1,4 @@
 Flask~=3.0.3
 waitress~=3.0.0
+jupyter~=1.0.0
+openai ~= 0.26.5

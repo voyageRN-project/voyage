@@ -1,9 +1,9 @@
-from ...src.processors.data_validator import DataValidator
-from ...src.processors.prompt_builder import PromptBuilder
-from ...src.processors.response_builder import ResponseBuilder
-from ...src.helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty
-from ...src.helpers.constants import EXPECTED_REQUEST_HEADERS, OPTIONAL_REQUEST_HEADERS
-from ...src.resources.generative_ai_resource import GenerativeAIResource
+from processors.data_validator import DataValidator
+from processors.prompt_builder import PromptBuilder
+from processors.response_builder import ResponseBuilder
+from helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty
+from helpers.constants import EXPECTED_REQUEST_HEADERS, OPTIONAL_REQUEST_HEADERS
+from resources.generative_ai_resource import GenerativeAIResource
 
 import logging as logger
 
