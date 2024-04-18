@@ -1,0 +1,75 @@
+
+
+{
+  "trip_itinerary":
+  [
+    {
+      "day":1,
+      "morning_activity": [
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""
+        }
+      ],
+      "afternoon_activity": [
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""
+        }
+      ],
+      "evening_activity":[
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""}
+      ],
+      "restaurants_recommendations":[
+        {
+          "restaurant_name":"",
+          "restaurant_type":""
+        }
+      ],
+      "accommodation_recommendations":[
+        {
+          "accommodation_name":"",
+          "accommodation_type":""
+        }
+      ]
+    },
+    {
+      "day":2,
+      "morning_activity":[
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""
+        }
+      ],
+      "afternoon_activity":[
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""
+        }
+      ],
+      "evening_activity":[
+        {
+          "content_name":"",
+          "content_type":"",
+          "content_description":""
+        }
+      ],
+      "restaurants_recommendations":[
+        {
+          "restaurant_name":"",
+          "restaurant_type":""
+        }
+      ],
+      "accommodation_recommendations":[
+        {"accommodation_name":"","accommodation_type":""}
+      ]
+    }
+  ]
+}

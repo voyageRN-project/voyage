@@ -3,3 +3,6 @@ waitress~=3.0.0
 jupyter~=1.0.0
 openai ~= 0.26.5
 python-dotenv~=1.0.1
+pydantic~=2.7.0
+pycountry-convert~=0.7.2
+pymongo~=4.6.3

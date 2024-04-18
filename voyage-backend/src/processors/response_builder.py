@@ -1,6 +1,9 @@
+from models.generated_trip import GeneratedTrip
+
+
 class ResponseBuilder:
     @staticmethod
-    def build_response(data, status_code):
+    def build_response(data: GeneratedTrip, status_code: int) -> dict[str, any]:
         return {
             'data': data,
             'status_code': status_code
