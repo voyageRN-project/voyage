@@ -15,6 +15,19 @@ class CountryNameError(Exception):
         self.error_string = error_string
         self.error_status_code = error_status_code
 
+
+class MongoConnectionError(Exception):
+    def __init__(self, error_string, error_status_code):
+        self.error_string = error_string
+        self.error_status_code = error_status_code
+
+
+class convertAIResponseToJsonError(Exception):
+    def __init__(self, error_string, error_status_code):
+        self.error_string = error_string
+        self.error_status_code = error_status_code
+
+
 class CouldNotGetValidResponseFromThirdParty(Exception):
     def __init__(self, error_string, error_status_code):
         self.error_string = error_string
