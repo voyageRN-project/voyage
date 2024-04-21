@@ -22,7 +22,13 @@ class MongoConnectionError(Exception):
         self.error_status_code = error_status_code
 
 
-class convertAIResponseToJsonError(Exception):
+class ThirdPartyDataValidatorError(Exception):
+    def __init__(self, error_string, error_status_code):
+        self.error_string = error_string
+        self.error_status_code = error_status_code
+
+
+class ConvertAIResponseToJsonError(Exception):
     def __init__(self, error_string, error_status_code):
         self.error_string = error_string
         self.error_status_code = error_status_code
