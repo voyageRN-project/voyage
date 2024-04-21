@@ -114,6 +114,7 @@ class DataValidator:
 
     @staticmethod
     def validate_content_location(content_name, requested_country_name: str, requested_city_name: str = None) -> bool:
+        # todo: need to verify the location validation  convert both the string to validate through and the country and the city to lower/upper case.
         """The function will validate the content location.
         :param content_name: The content name to be validated.
         :param requested_country_name: The country name to be validated.
