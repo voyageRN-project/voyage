@@ -11,6 +11,7 @@ from src.resources.generative_ai_resource import GenerativeAIResource
 from src.resources.mongo_db_resource import MongoDBResource
 
 import logging as logger
+
 logger.basicConfig(level=logger.INFO)
 
 # service consts:
@@ -29,6 +30,8 @@ class UserService:
         self.response_builder = ResponseBuilder()
         self.prompt_builder = PromptBuilder()
         self.db_resource = MongoDBResource()
+        self.required_headers = {}
+        self.optional_headers = {}
 
     def verify_request_headers(self) -> None:
         """the function go over the expected headers,
@@ -68,24 +71,29 @@ class UserService:
 
         return optional_headers
 
-    def get_recommendations_from_db(self, required_headers: dict[str, str], optional_headers: dict[str, str]):
+    def get_recommendations_from_db(self):
         """
         get the recommendations from the business DB according to the user search.
         return: the match lines recommendations from the business DB
         """
 
-        try:
-            c_name = country_alpha2_to_country_name(required_headers.get('country-code'), cn_name_format="default")
+        try:  # try to get the country name from the country code
+            c_name = country_alpha2_to_country_name(self.required_headers.get('country-code'), cn_name_format="default")
         except Exception as e:
             raise CountryNameError(f"Could not get country name from country code: "
-                                   f"{required_headers.get('country-code')}", 400)
-        user_properties = {"business_country": c_name, "interest-points": required_headers.get("interest-points")}
-        if optional_headers.get('city'):
-            user_properties["city"] = optional_headers.get('city')
-        if optional_headers.get('area'):
-            user_properties["area"] = optional_headers.get('area')
-        if optional_headers.get('accommodation_type'):
-            user_properties["accommodation_type"] = optional_headers.get('accommodation_type')
+                                   f"{self.required_headers.get('country-code')}", 400)
+        # todo: need to verify with Roni the format that she sends the data for the interest-points field,
+        #  the ideal way will be as a list[str],
+        #  if it wont be the format,
+        #  I'll need to convert it to list before adding it to the user_properties dict.
+        user_properties = {"country": c_name,
+                           "interest-points": self.required_headers.get("interest-points")}
+        if self.optional_headers.get('city'):
+            user_properties["city"] = self.optional_headers.get('city')
+        if self.optional_headers.get('area'):
+            user_properties["area"] = self.optional_headers.get('area')
+        if self.optional_headers.get('accommodation_type'):
+            user_properties["accommodation_type"] = self.optional_headers.get('accommodation_type')
         lines = self.db_resource.get_match_business_to_user_search(user_properties)
 
         return lines
@@ -146,8 +154,9 @@ class UserService:
                 # if it's the second time of invalid data response, return 500 error
                 if error_type == ErrorType.INVALID_RESPONSE:
                     logger.error(f"second time of invali data failure, return 500")
-                    raise CouldNotGetValidResponseFromThirdParty("Could not get a valid response from the generative AI",
-                                                                 500)
+                    raise CouldNotGetValidResponseFromThirdParty(
+                        "Could not get a valid response from the generative AI",
+                        500)
                 # if it's the first time of invalid data response, try again with invalid response error
                 else:
                     logger.info(f"trying to perform another request\n")
@@ -157,7 +166,62 @@ class UserService:
             raise e
         return json_itinerary
 
+    @staticmethod
+    def get_published_business_ids_from_itinerary(json_itinerary: dict[str, any], recommendations) -> list[str]:
+        """ the function gets the itinerary that has been built and the recommendations that has been proposed to
+        build it, and returns the IDs of the business that has been published in the itinerary
+        """
+        published_business_ids = []
+        flag_line_found = False
+        for line in recommendations:
+            for day_itinerary in json_itinerary.get("trip_itinerary"):
+                for content in day_itinerary.get("morning_activity"):
+                    if content.get("content_name").lower() == line.get("business_name").lower():
+                        published_business_ids.append(line.get("business_id"))
+                        flag_line_found = True
+                        break
+                if flag_line_found:
+                    break
+        return published_business_ids
+
+    def update_db_regarding_itinerary(self, json_itinerary: dict[str, any], recommendations) -> None:
+        """the function manages the update process i the different collection after a trip has been built.
+            - the itinerary with hos properties will be saved to the generated-trips collection
+            - the sites that have been published in the itinerary will be updated in the business DB
+            - the sites that have been published in the itinerary will be updated in the clients DB
+        :arg json_itinerary: the itinerary that has been built
+        :arg recommendations: the recommendations that has been proposed to build the prompt
+        {
+            "destination": string, (concat the country, area and city if exist)
+            "duration": String,
+            "body": Json, (the AI response json model)
+            "business_id": list[String] (the IDs of the business that has been published in the trip)
+        }
+        """
+        # first - find the business that has been published in the itinerary
+        published_business_ids = self.get_published_business_ids_from_itinerary(json_itinerary, recommendations)
+        try:  # try to get the country name from the country code
+            c_name = country_alpha2_to_country_name(self.required_headers.get('country-code'), cn_name_format="default")
+        except Exception as e:
+            raise CountryNameError(f"Could not get country name from country code: "
+                                   f"{self.required_headers.get('country-code')}", 400)
+        # save the itinerary to the generated-trips collection
+        itinerary_data_dict = {"destination": c_name,
+                               "duration": self.required_headers.get('duration'),
+                               "body": json_itinerary,
+                               "business_id": published_business_ids
+                               }
+        self.db_resource.add_new_generated_trip(itinerary_data_dict)
+        # update the business and clients DBs:
+        for business_id in published_business_ids:
+            self.db_resource.updates_credits_and_appearance_counter(business_id)
+
     def build_trip(self) -> 'ResponseBuilder':
+        # todo: open tasks in the user controller:
+        #  1. need to verify the response format.
+
+        # todo: need to think if we need to remove the 'city' and the 'area' fields.
+
         logger.info(f"UsersService: build_trip method called with headers: {self.request_headers}\n")
         # first - validate that all the expected headers exist in the request
         try:
@@ -165,14 +229,14 @@ class UserService:
         except MissingHeaderError as e:
             raise e
         # build a dict of the relevant headers for the prompt
-        required_headers = self.get_required_headers_dict()
-        optional_headers = self.get_optional_headers_dict()
+        self.required_headers = self.get_required_headers_dict()
+        self.optional_headers = self.get_optional_headers_dict()
         # get optional lines recommendations from the business DB
-        recommendations = self.get_recommendations_from_db(required_headers, optional_headers)
+        recommendations = self.get_recommendations_from_db()
         # build the prompt
         ready_prompt = (self.prompt_builder
-                        .with_required_headers(required_headers)
-                        .with_optional_headers(optional_headers)
+                        .with_required_headers(self.required_headers)
+                        .with_optional_headers(self.optional_headers)
                         .with_optional_business_recommendations(recommendations)
                         .build())
         logger.info(f"UsersService: prompt built: {ready_prompt}\n")
@@ -202,5 +266,8 @@ class UserService:
                     raise e
         except CouldNotGetValidResponseFromThirdParty as e:
             raise e
-        # if the data is valid - build the response and return it
+
+        # if the data is valid - first, trigger the required updates in the DBs,
+        self.update_db_regarding_itinerary(json_itinerary, recommendations)
+        # and secondly - build the response and return it
         return self.response_builder.build_response(json_itinerary, 200)

@@ -39,8 +39,10 @@ class PromptBuilder:
         return c_name
 
     def get_business_activities(self) -> str:
-        # todo: need to implement with the DB
-        return ""
+        str_recommendations = ("to the result trip itinerary, please add at least one of the following activities ("
+                               "=content):\n")
+        str_recommendations += self.optional_business_recommendations
+        return str_recommendations
 
     @staticmethod
     def get_json_model() -> str:

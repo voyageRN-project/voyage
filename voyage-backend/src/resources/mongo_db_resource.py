@@ -1,3 +1,5 @@
+from typing import Any
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -63,28 +65,46 @@ class MongoDBResource:
         self.business_collection.insert_one(business_data)
 
     def add_new_generated_trip(self, trip_data: dict):
-        """ input: a dictionary with the business data:
+        """ input: a dictionary with the itinerary data:
         {
-            "business_client_id": long (foreign key to the business client id)
-            "business_name": String,
-            "business_type": String,
-            "business_type": String,
-            "business_main": String,
-            "business_description": String,
-            "business_country": String,
-            "business_opening_hours": String,
-            "business_num_credits": String,
+            "destination": string, (concat the country, area and city if exist)
+            "duration": String,
+            "body": Json, (the AI response json model)
+            "business_id": list[String] (the IDs of the business that has been published in the trip)
         }
         """
         self.generated_trip_collection.insert_one(trip_data)
 
-    def get_match_business_to_user_search(self, user_search: dict):
-        # todo: need to update the search in the DB so it could search for one of the interest points,
-        #  all the user search dict has been updated, adjustments need to be performed.
+    def get_match_business_to_user_search(self, user_search: dict[str, Any]):
+        # todo: did not use the 'city' and 'area' fields in the search,
+        #  we are not consider these fields in the DB in the current implementation,
+        #  need to discuss about these data fields with Roni,
+
         """the function gets the properties that the user searched for as a dictionary,
         and return all the businesses that match the search from the business collection.
-        the return value is the DB data - the relevant data for the prompt still need to be extracted."""
-        relevant_lines = self.business_collection.find(user_search)
+        the return value is the DB data - the relevant data for the prompt still need to be extracted.
+        :arg user_search: a dictionary with the properties that the user searched for.
+            format:
+            {
+                "country": String,
+                "interest_points": List[Strings],
+
+                optional fields:
+                "city": String,
+                "area": String,
+                "accommodation_type": String
+            }
+        :return: a list of dictionaries with the match business data."""
+        # get the lines that match to the requested country
+        relevant_country_lines = self.business_collection.find(user_search.get("country"))
+        relevant_lines = []
+
+        #for each of the relevant lines, check if the interest points match
+        for line in relevant_country_lines:
+            for interest_point in user_search.get("interest_points"):
+                if interest_point in line["business_match_interest_points"]:
+                    relevant_lines.append(line)
+
         returned_data = []
         for line in relevant_lines:
             # get the match client data
@@ -94,22 +114,23 @@ class MongoDBResource:
                 returned_data.append(line)
         return returned_data
 
-    def updates_credits_and_appearance_counter(self, business_id: int):
+    def updates_credits_and_appearance_counter(self, business_id: int) -> None:
         """the function gets a business id to update,
         find the match line in the business table and update the "appearance_counter" field.
         then, it will get the match client data from the business clients table,
         and update the "credit_spent" field."""
 
+        # update the appearance counter in the business table
         query = {"business_id": business_id}
+        business = self.business_collection.find_one(query)
+        new_value = {"$set": {"appearance_counter": business["appearance_counter"] + 1}}
+        self.business_collection.update_one(query, new_value)
 
-        # get the business
-        business = self.business_collection.find_one({"business_id": business_id})
-        # update the credits and appearance counter
-        query =
-        business["appearance_counter"] += 1
-
-        # update the business in the collection
-        self.business_collection.update_one({"business_id": business_id}, {"$set": business})
-
+        # update the credit spent in the business clients table
+        client_id = business["business_client_id"]
+        query = {"business_client_id": client_id}
+        client = self.business_clients_collection.find_one(query)
+        new_value = {"$set": {"credit_spent": client["credit_spent"] + 1}}
+        self.business_clients_collection.update_one(query, new_value)
 
 

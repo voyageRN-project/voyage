@@ -114,7 +114,6 @@ class DataValidator:
 
     @staticmethod
     def validate_content_location(content_name, requested_country_name: str, requested_city_name: str = None) -> bool:
-        # todo: need to verify the location validation  convert both the string to validate through and the country and the city to lower/upper case.
         """The function will validate the content location.
         :param content_name: The content name to be validated.
         :param requested_country_name: The country name to be validated.
@@ -139,12 +138,12 @@ class DataValidator:
         flag_location_found = False
         for prediction in location_optional_predictions:
             # if requested city name is not None, check if the city name and the country name are in the prediction
-            if requested_city_name and requested_city_name in prediction['description'] and requested_country_name in \
-                    prediction['description']:
+            if (requested_city_name and requested_city_name.lower() in prediction['description'].lower() and
+                    requested_country_name.lower() in prediction['description'].lower()):
                 flag_location_found = True
                 break
             # else, check if the country name is in the prediction
-            elif requested_country_name in prediction['description']:
+            elif requested_country_name.lower() in prediction['description'].lower():
                 flag_location_found = True
                 break
         return flag_location_found
