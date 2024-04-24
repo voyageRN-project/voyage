@@ -1,0 +1,7 @@
+from pydantic import BaseModel
+
+
+class Content(BaseModel):
+    content_name: str
+    content_type: str
+    content_description: str

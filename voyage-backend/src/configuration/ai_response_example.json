@@ -1,0 +1,114 @@
+{
+  "trip_itinerary":
+  [
+    {"day":1,
+      "morning_activity":[
+        {
+          "content_name":"Santa Barbara Wine Country",
+          "content_type":"Winery",
+          "content_description":"Visit the renowned Santa Barbara Wine Country and indulge in tastings at picturesque vineyards."
+        }
+      ],
+      "afternoon_activity":
+      [
+        {
+          "content_name":"Solvang Day Trip",
+          "content_type":"Day Trip",
+          "content_description":"Embark on a charming day trip to the Danish-themed town of Solvang, with its quaint shops and bakeries."
+        }
+      ],
+      "evening_activity":
+      [
+        {
+          "content_name":"The Hungry Cat",
+          "content_type":"Restaurant",
+          "content_description":"Savor a delectable dinner at The Hungry Cat, known for its creative American cuisine."
+        }
+      ],
+      "restaurants_recommendations":
+      [
+        {
+          "restaurant_name":"The Black Sheep Restaurant",
+          "restaurant_type":"American"
+        }
+      ],
+      "accommodation_recommendations":
+      [
+        {
+          "accommodation_name":"The Santa Barbara Inn",
+          "accommodation_type":"Hotel"
+        }
+      ]
+    },
+    {
+      "day":2,"morning_activity": [
+      {
+        "content_name":"Ojai Vineyard",
+        "content_type":"Winery",
+        "content_description":"Explore the scenic Ojai Valley and visit the Ojai Vineyard for a guided tour and wine tasting."
+      }
+    ],
+      "afternoon_activity":[
+        {
+          "content_name":"Ventura Pier",
+          "content_type":"Day Trip",
+          "content_description":"Take a leisurely stroll along the historic Ventura Pier, offering panoramic ocean views and charming shops."
+        }
+      ],
+      "evening_activity":[
+        {
+          "content_name":"Brophy Bros. Clam Bar & Restaurant",
+          "content_type":"Restaurant",
+          "content_description":"Delight in fresh seafood and waterfront dining at Brophy Bros. Clam Bar & Restaurant."
+        }
+      ],
+      "restaurants_recommendations":[
+        {"restaurant_name":"The Fish House",
+          "restaurant_type":"Seafood"
+        }
+      ],
+      "accommodation_recommendations":[
+        {
+          "accommodation_name":"The Surfrider Hotel",
+          "accommodation_type":"Hotel"
+        }
+      ]
+    },
+    {
+      "day":3,
+      "morning_activity":[
+        {
+          "content_name":"Malibu Wine Safari",
+          "content_type":"Winery",
+          "content_description":"Embark on a unique wine safari at Malibu Wine Safari, where you'll encounter exotic animals."
+        }
+      ],
+      "afternoon_activity":[
+        {
+          "content_name":"Point Dume State Beach",
+          "content_type":"Day Trip",
+          "content_description":"Spend the afternoon soaking up the sun and enjoying the scenic coastal views at Point Dume State Beach."
+        }
+      ],
+      "evening_activity":[
+        {
+          "content_name":"Geoffrey's Malibu",
+          "content_type":"Restaurant",
+          "content_description":"Indulge in a romantic dinner at Geoffrey's Malibu, overlooking the stunning Pacific Ocean."
+        }
+      ],
+      "restaurants_recommendations":[
+        {
+          "restaurant_name":"The Lobster",
+          "restaurant_type":"Seafood"
+        }
+      ],
+      "accommodation_recommendations":[
+        {
+          "accommodation_name":"The Ritz-Carlton, Laguna Niguel",
+          "accommodation_type":"Hotel"
+        }
+      ]
+    }
+  ]
+}
