@@ -63,7 +63,6 @@ class MongoDBResource:
             "business_match_interest_points": List of Strings,
             "business_description": String,
             "business_country": String,
-            "business_opening_hours": String,
             "appearance_counter": integer,
         }
         """
