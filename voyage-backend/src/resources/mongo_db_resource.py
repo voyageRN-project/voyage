@@ -1,12 +1,14 @@
 from typing import Any
 
 from pymongo.mongo_client import MongoClient
+from pymongo.results import InsertOneResult
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
-from src.helpers.error_handling import MongoConnectionError
+from helpers.error_handling import MongoConnectionError
 import os
 import logging as logger
 
+from traitlets import Long
 
 load_dotenv()
 mongo_secret = os.getenv("MONGO_PASSWORD")
@@ -36,25 +38,28 @@ class MongoDBResource:
     def get_database(self, db_name: str):
         return self.business_db
 
+    def get_business_from_db(self, business_id: int):
+        return self.business_collection.find_one({"_id": business_id})
+
     def add_new_business_client(self, client_data: dict):
         """ input: a dictionary with the client data:
         {
-            "business_client_id": long
-            "client_name": String,
-            "client_email": String,
-            "client_phone": String,
-            "credit_bought": integer,
-            "credit_spent": integer,
+            "business_id": business_id,
+            "business_contact_person": string,
+            "business_contact_person_phone": string,
+            "credits_bought": int,
+            "credits_spent": int
         }
         """
-        self.business_clients_collection.insert_one(client_data)
+        return self.business_clients_collection.insert_one(client_data).inserted_id
 
     def add_new_business(self, business_data: dict):
         """ input: a dictionary with the business data:
         {
-            "business_client_id": long (foreign key to the business client id)
             "business_name": String,
             "business_type": String,
+            "business_phone": String,
+            "business_email": String,
             "business_match_interest_points": List of Strings,
             "business_description": String,
             "business_country": String,
@@ -62,7 +67,7 @@ class MongoDBResource:
             "appearance_counter": integer,
         }
         """
-        self.business_collection.insert_one(business_data)
+        return self.business_collection.insert_one(business_data).inserted_id
 
     def add_new_generated_trip(self, trip_data: dict):
         """ input: a dictionary with the itinerary data:
@@ -73,7 +78,7 @@ class MongoDBResource:
             "business_id": list[String] (the IDs of the business that has been published in the trip)
         }
         """
-        self.generated_trip_collection.insert_one(trip_data)
+        return self.generated_trip_collection.insert_one(trip_data).inserted_id
 
     def get_match_business_to_user_search(self, user_search: dict[str, Any]):
         # todo: did not use the 'city' and 'area' fields in the search,
@@ -127,10 +132,6 @@ class MongoDBResource:
         self.business_collection.update_one(query, new_value)
 
         # update the credit spent in the business clients table
-        client_id = business["business_client_id"]
-        query = {"business_client_id": client_id}
         client = self.business_clients_collection.find_one(query)
         new_value = {"$set": {"credit_spent": client["credit_spent"] + 1}}
         self.business_clients_collection.update_one(query, new_value)
-
-

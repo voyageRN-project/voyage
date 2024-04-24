@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-from src.models.content import Content
-from src.models.accommodation_recommendation import AccommodationRecommendation
-from src.models.restaurant_recommendation import RestaurantRecommendation
+from models.content import Content
+from models.accommodation_recommendation import AccommodationRecommendation
+from models.restaurant_recommendation import RestaurantRecommendation
 
 
 class DayItinerary(BaseModel):

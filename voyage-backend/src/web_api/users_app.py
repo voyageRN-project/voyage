@@ -3,7 +3,7 @@ import traceback
 from flask import Flask, request, Response
 from waitress import serve
 from services.user_service import UserService
-from helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty
+from helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
 import logging as logger
 
 logger.basicConfig(level=logger.INFO)
@@ -21,6 +21,8 @@ def build_trip():
     except MissingHeaderError as e:
         return Response(e.error_string, e.error_status_code)
     except CouldNotGetValidResponseFromThirdParty as e:
+        return Response(e.error_string, e.error_status_code)
+    except ConvertAIResponseToJsonError as e:
         return Response(e.error_string, e.error_status_code)
     except Exception as e:
         logger.error(f"got unexpected error:\n{str(e)}\n{str(traceback.format_exc())}\n")

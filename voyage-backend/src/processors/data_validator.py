@@ -1,7 +1,6 @@
-from collections.abc import dict_keys, dict_values
 from enum import Enum
 from typing import Union, Any
-from src.helpers.error_handling import ThirdPartyDataValidatorError
+from helpers.error_handling import ThirdPartyDataValidatorError
 import requests
 import json
 import logging as logger
@@ -52,7 +51,7 @@ class DataValidator:
 
     def validate_required_data_in_structure(self,
                                             data:str,
-                                            structure_need_to_be_include_in: Union[list,dict_keys, dict_values],
+                                            structure_need_to_be_include_in: Any,
                                             error_message: str) -> bool:
         """the function will validate that the data is included in the structure
         :param error_message: the error message to be added to the errors list in case of failure

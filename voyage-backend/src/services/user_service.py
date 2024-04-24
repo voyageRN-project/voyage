@@ -1,14 +1,14 @@
 import json
 from enum import Enum
 from pycountry_convert import country_alpha2_to_country_name
-from src.processors.data_validator import DataValidator
-from src.processors.prompt_builder import PromptBuilder
-from src.processors.response_builder import ResponseBuilder
-from src.helpers.error_handling import (MissingHeaderError, CouldNotGetValidResponseFromThirdParty,
+from processors.data_validator import DataValidator
+from processors.prompt_builder import PromptBuilder
+from processors.response_builder import ResponseBuilder
+from helpers.error_handling import (MissingHeaderError, CouldNotGetValidResponseFromThirdParty,
                                         CountryNameError, ConvertAIResponseToJsonError)
-from src.helpers.constants import EXPECTED_REQUEST_HEADERS, OPTIONAL_REQUEST_HEADERS
-from src.resources.generative_ai_resource import GenerativeAIResource
-from src.resources.mongo_db_resource import MongoDBResource
+from helpers.constants import NEW_TRIP_EXPECTED_REQUEST_HEADERS, NEW_TRIP_OPTIONAL_REQUEST_HEADERS
+from resources.generative_ai_resource import GenerativeAIResource
+from resources.mongo_db_resource import MongoDBResource
 
 import logging as logger
 
@@ -40,7 +40,7 @@ class UserService:
         (that should trigger an 400 response code
         (for bad request (=missing headers))"""
 
-        for header in EXPECTED_REQUEST_HEADERS:
+        for header in NEW_TRIP_EXPECTED_REQUEST_HEADERS:
             if header not in self.request_headers:
                 logger.error(f"UserService: missing header in request: {header}")
                 raise MissingHeaderError(f"Missing Header in Request: {header}", 400)
@@ -53,7 +53,7 @@ class UserService:
         """
 
         required_headers = {}
-        for header in EXPECTED_REQUEST_HEADERS:
+        for header in NEW_TRIP_EXPECTED_REQUEST_HEADERS:
             required_headers[header] = self.request_headers.get(header, None)
 
         return required_headers
@@ -65,7 +65,7 @@ class UserService:
         :return: the optional headers dict
         """
         optional_headers = {}
-        for header in OPTIONAL_REQUEST_HEADERS:
+        for header in NEW_TRIP_OPTIONAL_REQUEST_HEADERS:
             if header in self.request_headers:
                 optional_headers[header] = self.request_headers.get(header, None)
 
@@ -177,7 +177,7 @@ class UserService:
             for day_itinerary in json_itinerary.get("trip_itinerary"):
                 for content in day_itinerary.get("morning_activity"):
                     if content.get("content_name").lower() == line.get("business_name").lower():
-                        published_business_ids.append(line.get("business_id"))
+                        published_business_ids.append(line.get("_id"))
                         flag_line_found = True
                         break
                 if flag_line_found:
@@ -219,7 +219,6 @@ class UserService:
     def build_trip(self) -> 'ResponseBuilder':
         # todo: open tasks in the user controller:
         #  1. need to verify the response format.
-
         # todo: need to think if we need to remove the 'city' and the 'area' fields.
 
         logger.info(f"UsersService: build_trip method called with headers: {self.request_headers}\n")
