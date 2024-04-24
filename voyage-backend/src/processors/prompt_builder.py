@@ -1,10 +1,10 @@
 from pycountry_convert import country_alpha2_to_country_name
-from helpers.error_handling import CountryNameError
-from models.day_itinerary import DayItinerary
-from models.content import Content
-from models.generated_trip import GeneratedTrip
-from models.accommodation_recommendation import AccommodationRecommendation
-from models.restaurant_recommendation import RestaurantRecommendation
+from src.helpers.error_handling import CountryNameError
+from src.models.day_itinerary import DayItinerary
+from src.models.content import Content
+from src.models.generated_trip import GeneratedTrip
+from src.models.accommodation_recommendation import AccommodationRecommendation
+from src.models.restaurant_recommendation import RestaurantRecommendation
 
 
 class PromptBuilder:
@@ -92,7 +92,8 @@ class PromptBuilder:
             if self.optional_headers.get('city'):
                 base_prompt += f"the city should be: {self.optional_headers.get('city')}\n"
         # append match business activities if they exist and match the interest points and the location
-        base_prompt += self.get_business_activities()
+        if len(self.optional_business_recommendations.keys()) > 0:
+            base_prompt += self.get_business_activities()
         # append the error identification if it exists
         if self.error_identification:
             base_prompt += f"the following errors were found: {self.error_identification}\n"
