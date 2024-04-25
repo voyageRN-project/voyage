@@ -1,10 +1,9 @@
-import unittest
 import pytest
-# import sys
-# sys.path.append("../src")
+import sys
+sys.path.append("../src")
 
-from src.resources.generative_ai_resource import GenerativeAIResource
-from src.processors.prompt_builder import PromptBuilder
+from resources.generative_ai_resource import GenerativeAIResource
+from processors.prompt_builder import PromptBuilder
 import json
 
 

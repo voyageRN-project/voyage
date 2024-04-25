@@ -1,4 +1,7 @@
-from src.resources.mongo_db_resource import MongoDBResource
+import sys
+sys.path.append("../src")
+
+from resources.mongo_db_resource import MongoDBResource
 import logging as logger
 
 

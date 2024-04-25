@@ -1,4 +1,7 @@
-from src.processors.prompt_builder import PromptBuilder
+import sys
+sys.path.append("../src")
+
+from processors.prompt_builder import PromptBuilder
 import json
 
 
