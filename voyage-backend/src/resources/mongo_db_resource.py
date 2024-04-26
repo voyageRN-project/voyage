@@ -42,12 +42,16 @@ class MongoDBResource:
         business_object = self.business_collection.find_one({"_id": business_id})
         tmp_dict = business_object
         tmp_dict["_id"] = str(tmp_dict["_id"])
+        tmp_dict["business_client_id"] = str(tmp_dict["business_client_id"])
         return tmp_dict
+
+    def get_generated_trip_from_db(self, trip_id: int):
+        trip_object = self.generated_trip_collection.find_one({"_id": trip_id})
+        return trip_object["body"]
 
     def add_new_business_client(self, client_data: dict):
         """ input: a dictionary with the client data:
         {
-            "business_id": business_id,
             "business_contact_person": string,
             "business_contact_person_phone": string,
             "credits_bought": int,
@@ -60,6 +64,7 @@ class MongoDBResource:
         """ input: a dictionary with the business data:
         {
             "business_name": String,
+            "business_client_id": id
             "business_type": String,
             "business_phone": String,
             "business_email": String,
@@ -103,21 +108,23 @@ class MongoDBResource:
             }
         :return: a list of dictionaries with the match business data."""
         # get the lines that match to the requested country
-        relevant_country_lines = self.business_collection.find(user_search.get("country"))
+        query = {"business_country": user_search.get("country")}
+        relevant_country_lines = self.business_collection.find(query)
         relevant_lines = []
 
-        #for each of the relevant lines, check if the interest points match
+        # for each of the relevant lines, check if the interest points match
         for line in relevant_country_lines:
-            for interest_point in user_search.get("interest_points"):
+            for interest_point in user_search.get('interest-points'):
                 if interest_point in line["business_match_interest_points"]:
                     relevant_lines.append(line)
+                break
 
         returned_data = []
         for line in relevant_lines:
             # get the match client data
-            match_client = self.business_clients_collection.find_one({"business_client_id": line["business_client_id"]})
+            match_client = self.business_clients_collection.find_one({"_id": line["business_client_id"]})
             # if the match client has more credit than he spent, add the business to the returned data
-            if match_client["credit_bought"] - match_client["credit_spent"] > 0:
+            if match_client["credits_bought"] - match_client["credits_spent"] > 0:
                 returned_data.append(line)
         return returned_data
 
@@ -128,12 +135,13 @@ class MongoDBResource:
         and update the "credit_spent" field."""
 
         # update the appearance counter in the business table
-        query = {"business_id": business_id}
+        query = {"_id": business_id}
         business = self.business_collection.find_one(query)
         new_value = {"$set": {"appearance_counter": business["appearance_counter"] + 1}}
         self.business_collection.update_one(query, new_value)
 
         # update the credit spent in the business clients table
+        query = {"_id": business["business_client_id"]}
         client = self.business_clients_collection.find_one(query)
-        new_value = {"$set": {"credit_spent": client["credit_spent"] + 1}}
+        new_value = {"$set": {"credits_spent": client["credits_spent"] + 1}}
         self.business_clients_collection.update_one(query, new_value)

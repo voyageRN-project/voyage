@@ -23,18 +23,25 @@ class validationErrors(Enum):
                                              "require key for each day in the itinerary")
 
 
+class errorsType(Enum):
+    INVALID_FORMAT = "invalid format"
+    MISSING_REQUIRED_KEY = "missing required key"
+    INVALID_LOCATION = "invalid location"
+
+
 class DataValidator:
     def __init__(self):
-        self.errors = []
+        self.errors = {}
 
+    # todo -- add validation that the inserted business is in the right country.
     def verify_valid_raw_itinerary(self, json_raw_itinerary: Any,
                                    requested_country_name: str,
                                    requested_city_name: str = None) -> bool:
         if not self.validate_required_data_in_structure('trip_itinerary', json_raw_itinerary.keys(),
                                                         validationErrors.TRIP_ITINERARY_MISSING.value):
             return False
-        if json_raw_itinerary['trip_itinerary'].type() != list:
-            self.errors.append(validationErrors.TRIP_ITINERARY_NOT_LIST.value)
+        if type(json_raw_itinerary['trip_itinerary']) is not list:
+            self.errors[validationErrors.TRIP_ITINERARY_NOT_LIST.value] = errorsType.INVALID_FORMAT.value
             return False
         is_valid_data = True
         # perform the next validation for each day in the list of trip_itinerary
@@ -50,7 +57,7 @@ class DataValidator:
         return is_valid_data
 
     def validate_required_data_in_structure(self,
-                                            data:str,
+                                            data: str,
                                             structure_need_to_be_include_in: Any,
                                             error_message: str) -> bool:
         """the function will validate that the data is included in the structure
@@ -60,7 +67,7 @@ class DataValidator:
         :return: True if the data is included in the structure, False otherwise"""
 
         if data not in structure_need_to_be_include_in:
-            self.errors.append(error_message)
+            self.errors[error_message] = errorsType.MISSING_REQUIRED_KEY.value
             return False
 
         return True
@@ -84,7 +91,7 @@ class DataValidator:
 
         return True
 
-    def validate_data_in_day_itinerary(self, day_itinerary:dict[str, any], requested_country_name: str,
+    def validate_data_in_day_itinerary(self, day_itinerary: dict[str, any], requested_country_name: str,
                                        requested_city_name: str = None) -> bool:
         """The function will validate the data in the day itinerary.
         :param day_itinerary: The day itinerary to be validated.
@@ -97,16 +104,30 @@ class DataValidator:
         flag_res_validation = True
         for part in part_keys:
             for content in day_itinerary[part]:
-                if 'content_name' not in content.keys():
-                    self.errors.append(f"invalid json format: missing 'content_name' that should be included in each "
-                                       f"part of the day itinerary")
+                if ('content_name' not in content.keys() and 'restaurant_name' not in content.keys() and
+                        'accommodation_name' not in content.keys()):
+                    self.errors[(f"invalid json format: missing name for the content "
+                                 f"(could be content, restaurant or accommodation)")] = errorsType.MISSING_REQUIRED_KEY.value
                     return False
                 try:
-                    if not self.validate_content_location(content['content_name'], requested_country_name,
+                    key = 'content_name' if 'content_name' in content.keys() \
+                        else 'restaurant_name' if 'restaurant_name' in content.keys()\
+                        else 'accommodation_name'
+                    if not self.validate_content_location(content[key], requested_country_name,
                                                           requested_city_name):
-                        self.errors.append(
-                            f"found invalid location: {content['content_name']} is not in the requested location")
-                        flag_res_validation = False
+                        self.errors[(f"found invalid location: {content[key]} may not in the requested "
+                                     f"location")] = errorsType.INVALID_LOCATION.value
+                        # todo: a problem with the validation' the third party not always identify the places as
+                        #  expected.
+                        #  options to handle:
+                        #  1) add a flag to the response that the location is not valid
+                        #  and the user can decide if to continue or not.
+                        #  2) ask the ai to add an address and
+                        #  understand how to verify these addresses.
+                        #  3) adding a deeper verification that perform the
+                        #  same verification on part of the words in the name.
+
+                        # flag_res_validation = False
                 except ThirdPartyDataValidatorError as e:
                     raise e
         return flag_res_validation
