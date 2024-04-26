@@ -4,7 +4,7 @@ import logging as logger
 logger.basicConfig(level=logger.INFO)
 
 
-class MissingHeaderError(Exception):
+class MissingExpectedKeyInRequestBodyError(Exception):
     def __init__(self, error_string, error_status_code):
         self.error_string = error_string
         self.error_status_code = error_status_code

@@ -3,7 +3,7 @@ import traceback
 from flask import Flask, request, Response
 from waitress import serve
 from services.user_service import UserService
-from helpers.error_handling import MissingHeaderError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
+from helpers.error_handling import  MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
 import logging as logger
 
 logger.basicConfig(level=logger.INFO)
@@ -13,12 +13,12 @@ users_app = Flask(__name__)
 
 @users_app.route("/build_trip", methods=['GET'])
 def build_trip():
-    headers = dict(request.headers)
-    logger.info(f"user_app perform get request for building a new trip with the requested headers: {str(headers)}")
-    service = UserService(headers)
+    request_body = dict(request.form)
+    logger.info(f"user_app perform get request for building a new trip with the requested headers: {str(request_body)}")
+    service = UserService(request_body)
     try:
         return service.build_trip()
-    except MissingHeaderError as e:
+    except MissingExpectedKeyInRequestBodyError as e:
         return Response(e.error_string, e.error_status_code)
     except CouldNotGetValidResponseFromThirdParty as e:
         return Response(e.error_string, e.error_status_code)

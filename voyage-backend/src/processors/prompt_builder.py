@@ -1,25 +1,25 @@
 from pycountry_convert import country_alpha2_to_country_name
-from src.helpers.error_handling import CountryNameError
-from src.models.day_itinerary import DayItinerary
-from src.models.content import Content
-from src.models.generated_trip import GeneratedTrip
-from src.models.accommodation_recommendation import AccommodationRecommendation
-from src.models.restaurant_recommendation import RestaurantRecommendation
+from helpers.error_handling import CountryNameError
+from models.day_itinerary import DayItinerary
+from models.content import Content
+from models.generated_trip import GeneratedTrip
+from models.accommodation_recommendation import AccommodationRecommendation
+from models.restaurant_recommendation import RestaurantRecommendation
 
 
 class PromptBuilder:
     def __init__(self):
-        self.required_headers = {}
-        self.optional_headers = {}
+        self.required_keys = {}
+        self.optional_keys = {}
         self.optional_business_recommendations = {}
         self.error_identification = []
 
-    def with_required_headers(self, headers: dict[str, str]) -> 'PromptBuilder':
-        self.required_headers = headers
+    def with_required_keys(self, headers: dict[str, str]) -> 'PromptBuilder':
+        self.required_keys = headers
         return self
 
-    def with_optional_headers(self, headers: dict[str, str]) -> 'PromptBuilder':
-        self.optional_headers = headers
+    def with_optional_keys(self, headers: dict[str, str]) -> 'PromptBuilder':
+        self.optional_keys = headers
         return self
 
     def with_optional_business_recommendations(self, lines_from_table) -> 'PromptBuilder':
@@ -32,10 +32,10 @@ class PromptBuilder:
 
     def get_country_code(self) -> str:
         try:
-            c_name = country_alpha2_to_country_name(self.required_headers.get('country-code'), cn_name_format="default")
+            c_name = country_alpha2_to_country_name(self.required_keys.get('country-code'), cn_name_format="default")
         except Exception as e:
             raise CountryNameError(f"Could not get country name from country code: "
-                                   f"{self.required_headers.get('country-code')}", 400)
+                                   f"{self.required_keys.get('country-code')}", 400)
         return c_name
 
     def get_business_activities(self) -> str:
@@ -75,22 +75,22 @@ class PromptBuilder:
         base_prompt = (
             f"You are a great travel planner. I need you to generate a travel itinerary according to the following"
             f"properties.\n"
-            f"the vacation duration should be: {self.required_headers.get('duration')}\n"
+            f"the vacation duration should be: {self.required_keys.get('duration')}\n"
             f"the vacation destination should be: {c_name}\n"
-            f"the vacation season should be: {self.required_headers.get('season')}\n"
-            f"the vacation budget should be: {self.required_headers.get('budget')}\n"
-            f"the vacation participants are be: {self.required_headers.get('participants')}\n"
-            f"the main interest points are: {self.required_headers.get('interest-points')}\n")
+            f"the vacation season should be: {self.required_keys.get('season')}\n"
+            f"the vacation budget should be: {self.required_keys.get('budget')}\n"
+            f"the vacation participants are be: {self.required_keys.get('participants')}\n"
+            f"the main interest points are: {self.required_keys.get('interest-points')}\n")
         # append the optional headers if they exist
-        if self.optional_headers:
-            if self.optional_headers.get('accommodation_type'):
-                base_prompt += f"the accommodation type should be: {self.optional_headers.get('accommodation_type')}\n"
-            if self.optional_headers.get('transportation_type'):
-                base_prompt += f"the transportation type should be: {self.optional_headers.get('transportation_type')}\n"
-            if self.optional_headers.get('area'):
-                base_prompt += f"the area should be: {self.optional_headers.get('area')}\n"
-            if self.optional_headers.get('city'):
-                base_prompt += f"the city should be: {self.optional_headers.get('city')}\n"
+        if self.optional_keys:
+            if self.optional_keys.get('accommodation_type'):
+                base_prompt += f"the accommodation type should be: {self.optional_keys.get('accommodation_type')}\n"
+            if self.optional_keys.get('transportation_type'):
+                base_prompt += f"the transportation type should be: {self.optional_keys.get('transportation_type')}\n"
+            if self.optional_keys.get('area'):
+                base_prompt += f"the area should be: {self.optional_keys.get('area')}\n"
+            if self.optional_keys.get('city'):
+                base_prompt += f"the city should be: {self.optional_keys.get('city')}\n"
         # append match business activities if they exist and match the interest points and the location
         if len(self.optional_business_recommendations.keys()) > 0:
             base_prompt += self.get_business_activities()

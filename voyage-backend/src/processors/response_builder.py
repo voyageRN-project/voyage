@@ -1,11 +1,13 @@
+from typing import Any
+
 from models.generated_trip import GeneratedTrip
 
 
 class ResponseBuilder:
     @staticmethod
-    def build_response(data: GeneratedTrip, status_code: int) -> dict[str, any]:
+    def build_response(data: Any, status_code: int, data_title: str = 'data') -> dict[str, any]:
         return {
-            'data': data,
+            data_title: data,
             'status_code': status_code
         }
 

@@ -1,10 +1,9 @@
-import unittest
 import pytest
-# import sys
-# sys.path.append("../src")
+import sys
+sys.path.append("../src")
 
-from src.resources.generative_ai_resource import GenerativeAIResource
-from src.processors.prompt_builder import PromptBuilder
+from resources.generative_ai_resource import GenerativeAIResource
+from processors.prompt_builder import PromptBuilder
 import json
 
 
@@ -32,8 +31,8 @@ def prompt():
                         "interest-points": "wineries, day trips"}
     optional_headers = {"area": "west coast"}
     prompt_builder = ((PromptBuilder()
-                       .with_required_headers(required_headers))
-                      .with_optional_headers(optional_headers))
+                       .with_required_keys(required_headers))
+                      .with_optional_keys(optional_headers))
     prompt = prompt_builder.build()
     return prompt
 

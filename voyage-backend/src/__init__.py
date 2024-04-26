@@ -1,1 +1,1 @@
-__package__ = 'src'
+__package__ = ''

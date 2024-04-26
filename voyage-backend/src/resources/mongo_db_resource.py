@@ -39,7 +39,10 @@ class MongoDBResource:
         return self.business_db
 
     def get_business_from_db(self, business_id: int):
-        return self.business_collection.find_one({"_id": business_id})
+        business_object = self.business_collection.find_one({"_id": business_id})
+        tmp_dict = business_object
+        tmp_dict["_id"] = str(tmp_dict["_id"])
+        return tmp_dict
 
     def add_new_business_client(self, client_data: dict):
         """ input: a dictionary with the client data:
