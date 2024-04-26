@@ -81,5 +81,5 @@ class BusinessService:
 
 
 
-        return self.response_builder.build_response(self.db_resource.get_business_from_db(
+        return self.response_builder.build_business_response(self.db_resource.get_business_from_db(
             new_business_id), 200, 'new-business')

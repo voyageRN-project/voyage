@@ -92,8 +92,17 @@ class PromptBuilder:
             if self.optional_keys.get('city'):
                 base_prompt += f"the city should be: {self.optional_keys.get('city')}\n"
         # append match business activities if they exist and match the interest points and the location
-        if len(self.optional_business_recommendations.keys()) > 0:
-            base_prompt += self.get_business_activities()
+        if len(self.optional_business_recommendations) > 0:
+            business_num = 1
+            for business in self.optional_business_recommendations:
+                base_prompt += (f"{business_num})    Business name: {business.get('business_name')}, "
+                                f"Business type: {business.get('business_type')}, "
+                                f"business country: {business.get('business_country')}")
+                if business.get('business_description'):
+                    base_prompt += f", Business description: {business.get('business_description')}\n"
+                else:
+                    base_prompt += "\n"
+                business_num += 1
         # append the error identification if it exists
         if self.error_identification:
             base_prompt += f"the following errors were found: {self.error_identification}\n"
@@ -101,5 +110,7 @@ class PromptBuilder:
         response_jason_template = self.get_json_model()
         optimized_prompt = base_prompt + (f'Please provide a response in a structured JSON format that matches the '
                                           f'following model: {response_jason_template}')
-
+        optimized_prompt += base_prompt + (f'Please pay attention to include only the site name in the "content_name" '
+                                           f'field. (e.g. "content_name": "Cinque Terre" instead of "a day trip to '
+                                           f'Cinque Terre" that should be a part of the "content_description" field)')
         return optimized_prompt

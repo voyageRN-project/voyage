@@ -1,5 +1,7 @@
 import json
 from enum import Enum
+from typing import Any
+
 from pycountry_convert import country_alpha2_to_country_name
 from processors.data_validator import DataValidator
 from processors.prompt_builder import PromptBuilder
@@ -131,7 +133,8 @@ class UserService:
                                              .with_error_identification(errors_identification)
                                              .build())
         # get the response from the generative AI
-        raw_itinerary = GenerativeAIResource.get(prompt_with_errors_identification)
+        generative_ai_resource = GenerativeAIResource(prompt_with_errors_identification)
+        raw_itinerary = generative_ai_resource.get_generative_ai_response()
         # try to convert to valid Json
         try:
             json_itinerary = self.convert_ai_response_to_json(raw_itinerary)
@@ -187,7 +190,7 @@ class UserService:
                     break
         return published_business_ids
 
-    def update_db_regarding_itinerary(self, json_itinerary: dict[str, any], recommendations) -> None:
+    def update_db_regarding_itinerary(self, json_itinerary: dict[str, any], recommendations) -> Any:
         """the function manages the update process i the different collection after a trip has been built.
             - the itinerary with hos properties will be saved to the generated-trips collection
             - the sites that have been published in the itinerary will be updated in the business DB
@@ -214,10 +217,12 @@ class UserService:
                                "body": json_itinerary,
                                "business_id": published_business_ids
                                }
-        self.db_resource.add_new_generated_trip(itinerary_data_dict)
+        trip_id = self.db_resource.add_new_generated_trip(itinerary_data_dict)
         # update the business and clients DBs:
         for business_id in published_business_ids:
             self.db_resource.updates_credits_and_appearance_counter(business_id)
+        return trip_id
+
 
     def build_trip(self) -> 'ResponseBuilder':
         # todo: open tasks in the user controller:
@@ -258,7 +263,9 @@ class UserService:
         logger.info(f"UsersService: got raw itinerary from generative AI: {json_itinerary}\n")
         # validate the response from the generative AI
         try:
-            if not self.data_validator.verify_valid_raw_itinerary(json_itinerary):
+            c_name = country_alpha2_to_country_name(self.required_request_keys.get('country-code'),
+                                                    cn_name_format="default")
+            if not self.data_validator.verify_valid_raw_itinerary(json_itinerary, c_name):
                 logger.info(f"UsersService: first raw itinerary is not valid: {raw_itinerary},"
                             f" found errors:\n{self.data_validator.errors}\n, trying to perform another request\n")
                 try:
@@ -270,6 +277,7 @@ class UserService:
             raise e
 
         # if the data is valid - first, trigger the required updates in the DBs,
-        self.update_db_regarding_itinerary(json_itinerary, recommendations)
+        trip_id = self.update_db_regarding_itinerary(json_itinerary, recommendations)
+        itinerary_data = self.db_resource.get_generated_trip_from_db(trip_id)
         # and secondly - build the response and return it
-        return self.response_builder.build_response(json_itinerary, 200)
+        return self.response_builder.build_business_response(itinerary_data, 200, "trip_itinerary")
