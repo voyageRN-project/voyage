@@ -4,9 +4,9 @@ from pycountry_convert import country_alpha2_to_country_name
 from processors.data_validator import DataValidator
 from processors.prompt_builder import PromptBuilder
 from processors.response_builder import ResponseBuilder
-from helpers.error_handling import (MissingHeaderError, CouldNotGetValidResponseFromThirdParty,
+from helpers.error_handling import (MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty,
                                         CountryNameError, ConvertAIResponseToJsonError)
-from helpers.constants import NEW_TRIP_EXPECTED_REQUEST_HEADERS, NEW_TRIP_OPTIONAL_REQUEST_HEADERS
+from helpers.constants import NEW_TRIP_EXPECTED_REQUEST_PROPERTIES, NEW_TRIP_OPTIONAL_REQUEST_PROPERTIES
 from resources.generative_ai_resource import GenerativeAIResource
 from resources.mongo_db_resource import MongoDBResource
 
@@ -24,50 +24,53 @@ class ErrorType(Enum):
 
 
 class UserService:
-    def __init__(self, request_headers: dict[str, str]):
-        self.request_headers = request_headers
+    def __init__(self, request_body: dict[str, str]):
+        self.request_body = request_body
         self.data_validator = DataValidator()
         self.response_builder = ResponseBuilder()
         self.prompt_builder = PromptBuilder()
         self.db_resource = MongoDBResource()
-        self.required_headers = {}
-        self.optional_headers = {}
+        self.required_request_keys = {}
+        self.optional_request_keys = {}
 
-    def verify_request_headers(self) -> None:
+    def verify_request_keys(self) -> None:
         """the function go over the expected headers,
         and verify the existence of each one of them in the request headers.
         if one of the headers is missing, the function will raise an error
         (that should trigger an 400 response code
         (for bad request (=missing headers))"""
 
-        for header in NEW_TRIP_EXPECTED_REQUEST_HEADERS:
-            if header not in self.request_headers:
-                logger.error(f"UserService: missing header in request: {header}")
-                raise MissingHeaderError(f"Missing Header in Request: {header}", 400)
+        for expected_key in NEW_TRIP_EXPECTED_REQUEST_PROPERTIES:
+            if expected_key not in self.request_body.keys():
+                logger.error(f"UserService: missing expected key in request: {expected_key}")
+                raise MissingExpectedKeyInRequestBodyError(f"Missing Header in Request: {expected_key}", 400)
 
-    def get_required_headers_dict(self) -> dict[str, str]:
+    def get_required_properties_dict(self) -> dict[str, str]:
         """
         build the dict of the required headers,
         used after verification, known that all required headers exist.
         :return: the required headers dict
         """
 
-        required_headers = {}
-        for header in NEW_TRIP_EXPECTED_REQUEST_HEADERS:
-            required_headers[header] = self.request_headers.get(header, None)
+        required_properties = {}
+        for property_key in NEW_TRIP_EXPECTED_REQUEST_PROPERTIES:
+            if property_key == "interest-points":
+                required_properties[property_key] = self.request_body.get(property_key).split(",")
+            else:
+                required_properties[property_key] = self.request_body.get(property_key, None)
 
-        return required_headers
+        return required_properties
 
-    def get_optional_headers_dict(self) -> dict[str, str]:
+    def get_optional_keys_dict(self) -> dict[str, str]:
         """
         build the dict of the optional headers,
         takes only the existed headers from the request headers.
         :return: the optional headers dict
         """
         optional_headers = {}
-        for header in NEW_TRIP_OPTIONAL_REQUEST_HEADERS:
-            if header in self.request_headers:
-                optional_headers[header] = self.request_headers.get(header, None)
+        for header in NEW_TRIP_OPTIONAL_REQUEST_PROPERTIES:
+            if header in self.request_body:
+                optional_headers[header] = self.request_body.get(header, None)
 
         return optional_headers
 
@@ -78,22 +81,22 @@ class UserService:
         """
 
         try:  # try to get the country name from the country code
-            c_name = country_alpha2_to_country_name(self.required_headers.get('country-code'), cn_name_format="default")
+            c_name = country_alpha2_to_country_name(self.required_request_keys.get('country-code'), cn_name_format="default")
         except Exception as e:
             raise CountryNameError(f"Could not get country name from country code: "
-                                   f"{self.required_headers.get('country-code')}", 400)
+                                   f"{self.required_request_keys.get('country-code')}", 400)
         # todo: need to verify with Roni the format that she sends the data for the interest-points field,
         #  the ideal way will be as a list[str],
         #  if it wont be the format,
         #  I'll need to convert it to list before adding it to the user_properties dict.
         user_properties = {"country": c_name,
-                           "interest-points": self.required_headers.get("interest-points")}
-        if self.optional_headers.get('city'):
-            user_properties["city"] = self.optional_headers.get('city')
-        if self.optional_headers.get('area'):
-            user_properties["area"] = self.optional_headers.get('area')
-        if self.optional_headers.get('accommodation_type'):
-            user_properties["accommodation_type"] = self.optional_headers.get('accommodation_type')
+                           "interest-points": self.required_request_keys.get("interest-points")}
+        if self.optional_request_keys.get('city'):
+            user_properties["city"] = self.optional_request_keys.get('city')
+        if self.optional_request_keys.get('area'):
+            user_properties["area"] = self.optional_request_keys.get('area')
+        if self.optional_request_keys.get('accommodation_type'):
+            user_properties["accommodation_type"] = self.optional_request_keys.get('accommodation_type')
         lines = self.db_resource.get_match_business_to_user_search(user_properties)
 
         return lines
@@ -201,13 +204,13 @@ class UserService:
         # first - find the business that has been published in the itinerary
         published_business_ids = self.get_published_business_ids_from_itinerary(json_itinerary, recommendations)
         try:  # try to get the country name from the country code
-            c_name = country_alpha2_to_country_name(self.required_headers.get('country-code'), cn_name_format="default")
+            c_name = country_alpha2_to_country_name(self.required_request_keys.get('country-code'), cn_name_format="default")
         except Exception as e:
             raise CountryNameError(f"Could not get country name from country code: "
-                                   f"{self.required_headers.get('country-code')}", 400)
+                                   f"{self.required_request_keys.get('country-code')}", 400)
         # save the itinerary to the generated-trips collection
         itinerary_data_dict = {"destination": c_name,
-                               "duration": self.required_headers.get('duration'),
+                               "duration": self.required_request_keys.get('duration'),
                                "body": json_itinerary,
                                "business_id": published_business_ids
                                }
@@ -221,21 +224,21 @@ class UserService:
         #  1. need to verify the response format.
         # todo: need to think if we need to remove the 'city' and the 'area' fields.
 
-        logger.info(f"UsersService: build_trip method called with headers: {self.request_headers}\n")
+        logger.info(f"UsersService: build_trip method called with headers: {self.request_body}\n")
         # first - validate that all the expected headers exist in the request
         try:
-            self.verify_request_headers()
-        except MissingHeaderError as e:
+            self.verify_request_keys()
+        except MissingExpectedKeyInRequestBodyError as e:
             raise e
         # build a dict of the relevant headers for the prompt
-        self.required_headers = self.get_required_headers_dict()
-        self.optional_headers = self.get_optional_headers_dict()
+        self.required_request_keys = self.get_required_properties_dict()
+        self.optional_request_keys = self.get_optional_keys_dict()
         # get optional lines recommendations from the business DB
         recommendations = self.get_recommendations_from_db()
         # build the prompt
         ready_prompt = (self.prompt_builder
-                        .with_required_headers(self.required_headers)
-                        .with_optional_headers(self.optional_headers)
+                        .with_required_keys(self.required_request_keys)
+                        .with_optional_keys(self.optional_request_keys)
                         .with_optional_business_recommendations(recommendations)
                         .build())
         logger.info(f"UsersService: prompt built: {ready_prompt}\n")

@@ -24,8 +24,8 @@ def test_final_prompt():
                         "interest-points": "wineries, day trips"}
     optional_headers = {"area": "Aosta vally"}
     prompt_builder = ((PromptBuilder()
-                      .with_required_headers(required_headers))
-                      .with_optional_headers(optional_headers))
+                       .with_required_keys(required_headers))
+                      .with_optional_keys(optional_headers))
     prompt = prompt_builder.build()
     assert "Italy" in prompt
     assert "7 days" in prompt
