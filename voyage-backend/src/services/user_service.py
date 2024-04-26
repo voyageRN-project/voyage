@@ -89,14 +89,14 @@ class UserService:
         #  the ideal way will be as a list[str],
         #  if it wont be the format,
         #  I'll need to convert it to list before adding it to the user_properties dict.
-        user_properties = {"country": c_name,
-                           "interest-points": self.required_request_keys.get("interest-points")}
+        user_properties = {'country': c_name,
+                           'interest-points': self.required_request_keys.get("interest-points")}
         if self.optional_request_keys.get('city'):
-            user_properties["city"] = self.optional_request_keys.get('city')
+            user_properties['city'] = self.optional_request_keys.get('city')
         if self.optional_request_keys.get('area'):
-            user_properties["area"] = self.optional_request_keys.get('area')
+            user_properties['area'] = self.optional_request_keys.get('area')
         if self.optional_request_keys.get('accommodation_type'):
-            user_properties["accommodation_type"] = self.optional_request_keys.get('accommodation_type')
+            user_properties['accommodation_type'] = self.optional_request_keys.get('accommodation_type')
         lines = self.db_resource.get_match_business_to_user_search(user_properties)
 
         return lines

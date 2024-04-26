@@ -30,12 +30,14 @@ class BusinessService:
                 logger.error(f"BusinessService: missing header in request: {header}")
                 raise MissingExpectedKeyInRequestBodyError(f"Missing Header in Request: {header}", 400)
 
-    def add_new_business_to_db(self) -> Any:
+    def add_new_business_to_db(self, new_client_id: Any) -> Any:
         """the function adds the new business to the DB
         and returns the new business ID"""
 
         # build the new business dictionary
+        # todo: need to update the db and verify - the business should point to the client and not the opposite.
         business_data = {
+            "business_client_id": new_client_id,
             "business_name": self.request_body["business_name"],
             "business_type": self.request_body["business_type"],
             "business_phone": self.request_body["business_phone"],
@@ -51,11 +53,10 @@ class BusinessService:
         # add the new business to the DB
         return self.db_resource.add_new_business(business_data)
 
-    def add_new_client_to_db(self, business_id: Any) -> Any:
+    def add_new_client_to_db(self) -> Any:
         """the function adds a new client to the business clients DB
         and returns the new client ID"""
         client_data = {
-            "business_id": business_id,
             "business_contact_person": self.request_body["business_contact_person"],
             "business_contact_person_phone": self.request_body["business_contact_person_phone"],
             "credits_bought": int(self.request_body["credits_bought"]),
@@ -71,12 +72,14 @@ class BusinessService:
         except MissingExpectedKeyInRequestBodyError as e:
             raise e
 
+        # add a new client to the business clients DB
+        new_client_id = self.add_new_client_to_db()
+
         # add the new business to the DB
-        new_business_id = self.add_new_business_to_db()
+        new_business_id = self.add_new_business_to_db(new_client_id)
         logger.info(f"BusinessService: new business added to the DB with ID: {new_business_id}\n")
 
-        # add a new client to the business clients DB
-        self.add_new_client_to_db(new_business_id)
+
 
         return self.response_builder.build_response(self.db_resource.get_business_from_db(
             new_business_id), 200, 'new-business')

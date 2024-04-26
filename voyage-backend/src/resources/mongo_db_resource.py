@@ -103,19 +103,21 @@ class MongoDBResource:
             }
         :return: a list of dictionaries with the match business data."""
         # get the lines that match to the requested country
-        relevant_country_lines = self.business_collection.find(user_search.get("country"))
+        query = {"business_country": user_search.get("country")}
+        relevant_country_lines = self.business_collection.find(query)
         relevant_lines = []
 
         #for each of the relevant lines, check if the interest points match
         for line in relevant_country_lines:
-            for interest_point in user_search.get("interest_points"):
+            for interest_point in user_search.get('interest-points'):
                 if interest_point in line["business_match_interest_points"]:
                     relevant_lines.append(line)
+                break
 
         returned_data = []
         for line in relevant_lines:
             # get the match client data
-            match_client = self.business_clients_collection.find_one({"business_client_id": line["business_client_id"]})
+            match_client = self.business_clients_collection.find_one({"_id": line["business_id"]})
             # if the match client has more credit than he spent, add the business to the returned data
             if match_client["credit_bought"] - match_client["credit_spent"] > 0:
                 returned_data.append(line)
