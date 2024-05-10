@@ -160,11 +160,18 @@ class DataValidator:
         # first need to verify that the lang-lat exists
         if (('content_latitude' not in content.keys() or 'content_longitude' not in content.keys())
                 and ('restaurant_latitude' not in content.keys() or 'restaurant_longitude' not in content.keys())
-                and ('accommodation_latitude' not in content.keys() or 'accommodation_longitude' not in content.keys())):
+                and (
+                        'accommodation_latitude' not in content.keys() or 'accommodation_longitude' not in content.keys())):
             self.errors[(f"invalid json format: missing name for the content "
                          f"(could be content, restaurant or accommodation)")] = errorsType.MISSING_REQUIRED_KEY.value
             return False
-        if not self.verify_long_lat_in_country(content['content_longitude'], content['content_latitude'],
+        key_lat = 'content_latitude' if 'content_latitude' in content.keys() \
+            else 'restaurant_latitude' if 'restaurant_latitude' in content.keys() \
+            else 'accommodation_latitude'
+        key_long = 'content_longitude' if 'content_longitude' in content.keys() \
+            else 'restaurant_longitude' if 'restaurant_longitude' in content.keys() \
+            else 'accommodation_longitude'
+        if not self.verify_long_lat_in_country(content[key_long], content[key_lat],
                                                requested_country_name):
             return False
         return True
@@ -205,11 +212,14 @@ class DataValidator:
                 break
         return flag_location_found
 
-    def verify_all_fields_contain_data(self, json_raw_itinerary: Any) -> bool:
+    def verify_all_fields_contain_data(self, json_raw_itinerary: Any, requested_days: int) -> bool:
         """The function will verify that all the fields in the json raw itinerary contain data.
         :param json_raw_itinerary: The json raw itinerary to be validated.
         :return: True if all the fields in the json raw itinerary contain data, False otherwise."""
 
+        if len(json_raw_itinerary['trip_itinerary']) != requested_days:
+            self.errors[f"invalid json format: got incorrect number of itinerary days."] = errorsType.INVALID_FORMAT.value
+            return False
         for day_itinerary in json_raw_itinerary['trip_itinerary']:
             if not self.verify_all_fields_contain_data_in_day_itinerary(day_itinerary):
                 return False
@@ -222,31 +232,11 @@ class DataValidator:
         :return: True if all the fields in the day itinerary contain data, False otherwise."""
 
         for part in day_itinerary.keys():
-            if not self.verify_all_fields_contain_data_in_part(day_itinerary[part]):
-                return False
-
-        return True
-
-    def verify_all_fields_contain_data_in_part(self, part: list[dict[str, any]]) -> bool:
-        """The function will verify that all the fields in the part contain data.
-        :param part: The part to be validated.
-        :return: True if all the fields in the part contain data, False otherwise."""
-
-        for content in part:
-            if not self.verify_all_fields_contain_data_in_content(content):
-                return False
-
-        return True
-
-    @staticmethod
-    def verify_all_fields_contain_data_in_content(content: dict[str, any]) -> bool:
-        """The function will verify that all the fields in the content contain data.
-        :param content: The content to be validated.
-        :return: True if all the fields in the content contain data, False otherwise."""
-
-        for key in content.keys():
-            if not content[key]:
-                return False
+            if type(day_itinerary[part]) is not int:
+                if len(day_itinerary[part]) == 0:
+                    self.errors[
+                        f"invalid json format: missing data in the content: {part}"] = errorsType.INVALID_FORMAT.value
+                    return False
 
         return True
 
