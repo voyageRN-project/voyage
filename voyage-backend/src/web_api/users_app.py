@@ -1,5 +1,5 @@
 import traceback
-
+from flask_cors import CORS
 from flask import Flask, request, Response
 from waitress import serve
 from services.user_service import UserService
@@ -9,6 +9,7 @@ import logging as logger
 logger.basicConfig(level=logger.INFO)
 
 users_app = Flask(__name__)
+CORS(users_app)
 
 
 @users_app.route("/build_trip", methods=['GET'])
