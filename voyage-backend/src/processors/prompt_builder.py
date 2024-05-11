@@ -49,9 +49,19 @@ class PromptBuilder:
         """This function is used to get the json model of the GeneratedTrip class
         to be used in the prompt generation."""
 
-        content_template = Content(content_name="", content_type="", content_description="")
-        restaurant_template = RestaurantRecommendation(restaurant_name="", restaurant_type="")
-        accommodation_template = AccommodationRecommendation(accommodation_name="", accommodation_type="")
+        content_template = Content(content_name="<content name>",
+                                   content_type="<content type>",
+                                   content_description="<content_description>",
+                                   content_latitude="<content_latitude>",
+                                   content_longitude="<content_longitude>")
+        restaurant_template = RestaurantRecommendation(restaurant_name="<restaurant_name>",
+                                                       restaurant_type="<restaurant_type>",
+                                                       restaurant_latitude="<restaurant_latitude>",
+                                                       restaurant_longitude="<restaurant_longitude>")
+        accommodation_template = AccommodationRecommendation(accommodation_name="<accommodation_name>",
+                                                             accommodation_type="<accommodation_type>",
+                                                             accommodation_latitude="<accommodation_latitude>",
+                                                             accommodation_longitude="<accommodation_longitude>")
         fist_day_itinerary = DayItinerary(day=1,
                                           morning_activity=[content_template],
                                           afternoon_activity=[content_template],
@@ -73,8 +83,8 @@ class PromptBuilder:
         c_name = self.get_country_code()
         # build the basic prompt
         base_prompt = (
-            f"You are a great travel planner. I need you to generate a travel itinerary according to the following"
-            f"properties.\n"
+            f"You are a great trip planner. I need you to generate a trip itinerary according to the following"
+            f" properties.\n"
             f"the vacation duration should be: {self.required_keys.get('duration')}\n"
             f"the vacation destination should be: {c_name}\n"
             f"the vacation season should be: {self.required_keys.get('season')}\n"
@@ -93,6 +103,7 @@ class PromptBuilder:
                 base_prompt += f"the city should be: {self.optional_keys.get('city')}\n"
         # append match business activities if they exist and match the interest points and the location
         if len(self.optional_business_recommendations) > 0:
+            base_prompt += "the trip itinerary should include the following activities:\n"
             business_num = 1
             for business in self.optional_business_recommendations:
                 base_prompt += (f"{business_num})    Business name: {business.get('business_name')}, "
@@ -109,8 +120,12 @@ class PromptBuilder:
         # append the json model of the GeneratedTrip class
         response_jason_template = self.get_json_model()
         optimized_prompt = base_prompt + (f'Please provide a response in a structured JSON format that matches the '
-                                          f'following model: {response_jason_template}')
-        optimized_prompt += base_prompt + (f'Please pay attention to include only the site name in the "content_name" '
-                                           f'field. (e.g. "content_name": "Cinque Terre" instead of "a day trip to '
-                                           f'Cinque Terre" that should be a part of the "content_description" field)')
+                                          f'following model: {response_jason_template}\n')
+        optimized_prompt += (f'Please pay attention to include only the specific site name in the '
+                             f'"content_name", field. (e.g. "content_name": "Cinque Terre" instead of '
+                             f'"a day trip to Cinque Terre" that should be a part of the '
+                             f'"content_description" field).\n'
+                             f'very important - each content must have longitudes and latitudes to '
+                             f'validate the correctness of the data and all the requested fields must '
+                             f'be completed.\n')
         return optimized_prompt

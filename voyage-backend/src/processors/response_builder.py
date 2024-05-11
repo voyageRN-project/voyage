@@ -1,5 +1,4 @@
 from typing import Any
-
 from models.generated_trip import GeneratedTrip
 
 

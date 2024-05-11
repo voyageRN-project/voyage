@@ -1,5 +1,8 @@
 import json
+
+import geopy
 import requests
+from geopy import Nominatim
 
 
 def test_validation_api_request():
@@ -15,4 +18,11 @@ def test_validation_api_request():
             flag_location_found = True
             break
     assert flag_location_found
+
+def test_validate_geo_location_to_country():
+    geo_locator = Nominatim(user_agent="voyage_project")
+    country_code = "it"
+    location = geopy.point.Point(43.509632, 11.081778)
+    res = geo_locator.reverse(location)
+    assert country_code.lower() in res.raw['address']['country_code'].lower()
 

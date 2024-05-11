@@ -88,9 +88,6 @@ class MongoDBResource:
         return self.generated_trip_collection.insert_one(trip_data).inserted_id
 
     def get_match_business_to_user_search(self, user_search: dict[str, Any]):
-        # todo: did not use the 'city' and 'area' fields in the search,
-        #  we are not consider these fields in the DB in the current implementation,
-        #  need to discuss about these data fields with Roni,
 
         """the function gets the properties that the user searched for as a dictionary,
         and return all the businesses that match the search from the business collection.

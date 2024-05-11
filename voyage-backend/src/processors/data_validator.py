@@ -1,9 +1,14 @@
 from enum import Enum
 from typing import Union, Any
 from helpers.error_handling import ThirdPartyDataValidatorError
+from helpers.error_handling import CountryNameError
+from geopy.geocoders import Nominatim
 import requests
 import json
+import geopy
 import logging as logger
+
+from pycountry_convert import country_name_to_country_alpha2
 
 logger.basicConfig(level=logger.INFO)
 
@@ -32,23 +37,37 @@ class errorsType(Enum):
 class DataValidator:
     def __init__(self):
         self.errors = {}
+        self.geo_locator = Nominatim(user_agent="voyage_project")
 
-    # todo -- add validation that the inserted business is in the right country.
+    def verify_long_lat_in_country(self, longitude: str, latitude: str, c_name: str) -> bool:
+        c_code = self.get_country_code(c_name)
+        location = geopy.point.Point(float(latitude), float(longitude))
+        res = self.geo_locator.reverse(location)
+        if c_code.lower() not in res.raw['address']['country_code'].lower():
+            return False
+        return True
+
     def verify_valid_raw_itinerary(self, json_raw_itinerary: Any,
                                    requested_country_name: str,
                                    requested_city_name: str = None) -> bool:
+        # first - validate the expected json header
         if not self.validate_required_data_in_structure('trip_itinerary', json_raw_itinerary.keys(),
                                                         validationErrors.TRIP_ITINERARY_MISSING.value):
             return False
+
+        # verify that the trip itinerary is a list
         if type(json_raw_itinerary['trip_itinerary']) is not list:
             self.errors[validationErrors.TRIP_ITINERARY_NOT_LIST.value] = errorsType.INVALID_FORMAT.value
             return False
-        is_valid_data = True
+
         # perform the next validation for each day in the list of trip_itinerary
+        is_valid_data = True
         for day_itinerary in json_raw_itinerary['trip_itinerary']:
+            # validate that all the expected keys are in the day itinerary - required to perform the next validation
             if not self.validate_require_keys_in_day_itinerary(day_itinerary):
                 return False
             try:
+                # validate the data in the day itinerary
                 if not self.validate_data_in_day_itinerary(day_itinerary, requested_country_name, requested_city_name):
                     is_valid_data = False
             except ThirdPartyDataValidatorError as e:
@@ -102,35 +121,60 @@ class DataValidator:
         part_keys = ['morning_activity', 'afternoon_activity', 'evening_activity', 'restaurants_recommendations',
                      'accommodation_recommendations']
         flag_res_validation = True
+        # for each of the expected parts in the day itinerary, validate the content
         for part in part_keys:
-            for content in day_itinerary[part]:
-                if ('content_name' not in content.keys() and 'restaurant_name' not in content.keys() and
-                        'accommodation_name' not in content.keys()):
-                    self.errors[(f"invalid json format: missing name for the content "
-                                 f"(could be content, restaurant or accommodation)")] = errorsType.MISSING_REQUIRED_KEY.value
-                    return False
-                try:
-                    key = 'content_name' if 'content_name' in content.keys() \
-                        else 'restaurant_name' if 'restaurant_name' in content.keys()\
-                        else 'accommodation_name'
-                    if not self.validate_content_location(content[key], requested_country_name,
-                                                          requested_city_name):
-                        self.errors[(f"found invalid location: {content[key]} may not in the requested "
-                                     f"location")] = errorsType.INVALID_LOCATION.value
-                        # todo: a problem with the validation' the third party not always identify the places as
-                        #  expected.
-                        #  options to handle:
-                        #  1) add a flag to the response that the location is not valid
-                        #  and the user can decide if to continue or not.
-                        #  2) ask the ai to add an address and
-                        #  understand how to verify these addresses.
-                        #  3) adding a deeper verification that perform the
-                        #  same verification on part of the words in the name.
-
-                        # flag_res_validation = False
-                except ThirdPartyDataValidatorError as e:
-                    raise e
+            # get the match contents list for the match part if exists.
+            content_lst = day_itinerary.get(part, None)
+            if content_lst is not None:
+                for content in content_lst:
+                    try:
+                        if not self.validate_content_data_by_name(content, requested_country_name):
+                            # if it failed, validation through lang-lat will be performed,
+                            if not self.validate_content_data_by_long_lat(content, requested_country_name):
+                                # if the validation failed, add an error to the error list
+                                self.errors[(f"found invalid location: {content} may not is not in the requested "
+                                             f"location")] = errorsType.INVALID_LOCATION.value
+                                flag_res_validation = False
+                    except ThirdPartyDataValidatorError as e:
+                        raise e
         return flag_res_validation
+
+    def validate_content_data_by_name(self, content: dict[Any, Any], requested_country_name: str) -> bool:
+        # if the content does not include the name key, add an error to the error list
+        if ('content_name' not in content.keys() and 'restaurant_name' not in content.keys() and
+                'accommodation_name' not in content.keys()):
+            self.errors[(f"invalid json format: missing name for the content "
+                         f"(could be content, restaurant or accommodation)")] = errorsType.MISSING_REQUIRED_KEY.value
+            return False
+        try:
+            # get the match key - name
+            key = 'content_name' if 'content_name' in content.keys() \
+                else 'restaurant_name' if 'restaurant_name' in content.keys() \
+                else 'accommodation_name'
+            # validate the location of the content, using the third party location validator by the name of the content
+            return self.validate_content_location(content[key], requested_country_name)
+        except ThirdPartyDataValidatorError as e:
+            raise e
+
+    def validate_content_data_by_long_lat(self, content: dict[Any, Any], requested_country_name: str) -> bool:
+        # first need to verify that the lang-lat exists
+        if (('content_latitude' not in content.keys() or 'content_longitude' not in content.keys())
+                and ('restaurant_latitude' not in content.keys() or 'restaurant_longitude' not in content.keys())
+                and (
+                        'accommodation_latitude' not in content.keys() or 'accommodation_longitude' not in content.keys())):
+            self.errors[(f"invalid json format: missing name for the content "
+                         f"(could be content, restaurant or accommodation)")] = errorsType.MISSING_REQUIRED_KEY.value
+            return False
+        key_lat = 'content_latitude' if 'content_latitude' in content.keys() \
+            else 'restaurant_latitude' if 'restaurant_latitude' in content.keys() \
+            else 'accommodation_latitude'
+        key_long = 'content_longitude' if 'content_longitude' in content.keys() \
+            else 'restaurant_longitude' if 'restaurant_longitude' in content.keys() \
+            else 'accommodation_longitude'
+        if not self.verify_long_lat_in_country(content[key_long], content[key_lat],
+                                               requested_country_name):
+            return False
+        return True
 
     @staticmethod
     def validate_content_location(content_name, requested_country_name: str, requested_city_name: str = None) -> bool:
@@ -167,3 +211,40 @@ class DataValidator:
                 flag_location_found = True
                 break
         return flag_location_found
+
+    def verify_all_fields_contain_data(self, json_raw_itinerary: Any, requested_days: int) -> bool:
+        """The function will verify that all the fields in the json raw itinerary contain data.
+        :param json_raw_itinerary: The json raw itinerary to be validated.
+        :return: True if all the fields in the json raw itinerary contain data, False otherwise."""
+
+        if len(json_raw_itinerary['trip_itinerary']) != requested_days:
+            self.errors[f"invalid json format: got incorrect number of itinerary days."] = errorsType.INVALID_FORMAT.value
+            return False
+        for day_itinerary in json_raw_itinerary['trip_itinerary']:
+            if not self.verify_all_fields_contain_data_in_day_itinerary(day_itinerary):
+                return False
+
+        return True
+
+    def verify_all_fields_contain_data_in_day_itinerary(self, day_itinerary: dict[str, any]) -> bool:
+        """The function will verify that all the fields in the day itinerary contain data.
+        :param day_itinerary: The day itinerary to be validated.
+        :return: True if all the fields in the day itinerary contain data, False otherwise."""
+
+        for part in day_itinerary.keys():
+            if type(day_itinerary[part]) is not int:
+                if len(day_itinerary[part]) == 0:
+                    self.errors[
+                        f"invalid json format: missing data in the content: {part}"] = errorsType.INVALID_FORMAT.value
+                    return False
+
+        return True
+
+    @staticmethod
+    def get_country_code(country_name: str):
+        try:  # try to get the country code from the country name
+            country_code = country_name_to_country_alpha2(country_name)
+        except Exception as e:
+            raise CountryNameError(f"Could not get country name from country code: "
+                                   f"{country_name}", 400)
+        return country_code
