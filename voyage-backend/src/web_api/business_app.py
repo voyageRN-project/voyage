@@ -1,12 +1,14 @@
 import traceback
 from flask import Flask, request, Response
 from waitress import serve
+from flask_cors import CORS
 from services.business_clients_service import BusinessService
 from helpers.error_handling import MissingExpectedKeyInRequestBodyError
 import logging as logger
 logger.basicConfig(level=logger.INFO)
 
 business_app = Flask(__name__)
+CORS(business_app)
 
 
 @business_app.route("/add_business", methods=['POST'])
