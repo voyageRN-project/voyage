@@ -1,8 +1,6 @@
 from typing import Any
 
 from pymongo.mongo_client import MongoClient
-from pymongo.results import InsertOneResult
-from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from helpers.error_handling import MongoConnectionError
 import os
@@ -20,12 +18,12 @@ connection_string = "mongodb+srv://netawerner:<password>@voyagecluster.j9rcyj3.m
 class MongoDBResource:
     def __init__(self):
         # Create a new client and connect to the server
-        self.client = MongoClient(uri)
         try:
+            self.client = MongoClient(uri)
             self.client.admin.command('ping')
             logger.info("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
-            logger.error("Could not connect to MongoDB")
+            logger.error(f"Could not connect to MongoDB: {e}")
             raise MongoConnectionError(f"Could not connect to MongoDB", 500)
         self.business_db = self.client["business_db"]
         self.business_clients_collection = self.business_db["business-clients"]
