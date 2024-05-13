@@ -12,7 +12,7 @@ users_app = Flask(__name__)
 CORS(users_app)
 
 
-@users_app.route("/build_trip", methods=['GET'])
+@users_app.route("/build_trip", methods=['POST'])
 def build_trip():
     request_body = dict(request.form)
     logger.info(f"user_app perform get request for building a new trip with the requested headers: {str(request_body)}")
