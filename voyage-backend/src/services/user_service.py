@@ -301,6 +301,7 @@ class UserService:
                             f" found errors:\n{self.data_validator.errors}\n, trying to perform another request\n")
             else:
                 return json_itinerary
+            self.data_validator.errors = {}
             attempt_counter += 1
         raise CouldNotGetValidResponseFromThirdParty("Could not get a valid response from the generative AI", 500)
 
