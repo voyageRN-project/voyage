@@ -1,6 +1,6 @@
 from services.business_clients_service import BusinessService
 import traceback
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 from services.user_service import UserService
 from helpers.error_handling import MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
 import logging as logger
@@ -44,7 +44,8 @@ def users_handler():
 
 @app.route('/management/health')
 def get_health():
-    return "Up"
+    logger.debug("management perform get request for health check")
+    return jsonify({"status": "ok"})
 
 
 
