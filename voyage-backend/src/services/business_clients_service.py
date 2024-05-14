@@ -50,15 +50,16 @@ class BusinessService:
                                      business_longitude=self.request_body["business_longitude"],
                                      business_latitude=self.request_body["business_latitude"])
         # add the new business to the DB
-        return self.db_resource.add_new_business(business_data)
+        return self.db_resource.add_new_business(business_data.dict())
 
     def add_new_client_to_db(self) -> Any:
         """the function adds a new client to the business clients DB
         and returns the new client ID"""
+
         client_data = ClientData(business_contact_person=self.request_body["business_contact_person"],
                                  business_contact_person_phone=self.request_body["business_contact_person_phone"],
                                  credits_bought=int(self.request_body["credits_bought"]))
-        return self.db_resource.add_new_business_client(client_data)
+        return self.db_resource.add_new_business_client(client_data.dict())
 
     def add_new_business(self) -> 'ResponseBuilder':
         logger.info(f"BusinessService: add new business method called with headers: {self.request_body}\n")
