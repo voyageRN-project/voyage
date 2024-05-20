@@ -145,7 +145,7 @@ function Preferences() {
       </label>
       <br />
 
-      <label>Who is participating in the trip:
+      <label>Participants:
         <select name="participants" value={preferences.participants} onChange={handleInputChange}>
           <option value="">Select participants</option>
           <option value="family">Family</option>
@@ -154,7 +154,7 @@ function Preferences() {
         </select>
       </label>
       <br />
-      <label>Where you want?
+      <label>Choose your destination:
       <Select classNames="country"
                  options={countryOptions}
                  className="country"
@@ -173,7 +173,7 @@ function Preferences() {
         />
       </label>
       <br />
-      <label>Where you want to sleep? </label>
+      <label>Choose accommodation type:</label>
       <select
           className="accommodation catgory"
           name="accommodation"
@@ -184,11 +184,11 @@ function Preferences() {
           <option value="Hotel">Hotel</option>
           <option value="Hostel">Hostel</option>
           <option value="Campsite">Campsite</option>
-          <option value="farm house">Farm house</option>
+          <option value="Farm House">Farm house</option>
         </select>
 
       <fieldset>
-        <legend>Things that interest you on a trip:</legend>
+        <legend>Choose your points of interest:</legend>
         <label>
           <input
             type="checkbox"

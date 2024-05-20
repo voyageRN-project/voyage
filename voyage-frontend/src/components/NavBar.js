@@ -2,7 +2,7 @@ import { Component } from "react";
 import "./NavBarStyles.css";
 import {Link} from "react-router-dom";
 import { MenuItems } from "./MenuItems";
-import logo from "../photos/‏‏logowithoutline.jpg"
+import logo from "../photos/logowithoutline.jpg"
 
 
 class NavBar extends Component {
