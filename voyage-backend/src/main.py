@@ -9,7 +9,7 @@ logger.basicConfig(level=logger.INFO)
 app = Flask(__name__)
 
 
-@app.route("/business_app/add_business", methods=['POST'])
+@app.route("/api/v1/business_app/add_business", methods=['POST'])
 def add_business():
     request_body = dict(request.form)
     logger.info(
@@ -24,7 +24,7 @@ def add_business():
         return Response(f"unknown error: {e}", 500)
 
 
-@app.route('/users_app/build_trip', methods=['POST'])
+@app.route('/api/v1/users_app/build_trip', methods=['POST'])
 def users_handler():
     request_body = dict(request.form)
     logger.info(f"user_app perform get request for building a new trip with the requested headers: {str(request_body)}")
@@ -42,7 +42,7 @@ def users_handler():
         return Response("unknown error", 500)
 
 
-@app.route('/management/health')
+@app.route('/api/v1/management/health')
 def get_health():
     logger.debug("management perform get request for health check")
     return jsonify({"status": "ok"})
