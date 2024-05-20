@@ -1,0 +1,105 @@
+.preferences {
+    padding: 12rem 6rem;
+    background: rgb(255, 255, 255);
+    color: black;
+
+}
+
+
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loading-text {
+  font-size: 50px;
+  font-weight: bold; 
+  color:  hsl(182, 58%, 55%);
+}
+
+.pv {
+    background: #f7f7f7;
+    padding: 20px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  .pv form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .pvs label {
+    margin-bottom: 10px;
+    color: #666;
+  }
+  
+  .pv input[type="number"],
+  .pv select,
+  .pv input[type="checkbox"] {
+    padding: 8px;
+    margin-top: 5px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 16px);
+    box-sizing: border-box;
+  }
+  
+  .pv input[type="checkbox"] {
+    padding-left: 20%;
+    margin-top: 0;
+    width: auto;
+  }
+
+  
+  .pv fieldset {
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .pv legend {
+    padding: 0;
+    color: #444;
+  }
+
+  .pv label {
+    display: inline-block;; /* Use flexbox to align checkbox and label */
+  align-items: center;
+  }
+
+  .pv input[type="checkbox"] {
+    padding: 8px;
+    margin-top: 10px; /* Increase top margin */
+    margin-bottom: 10px; /* Increase bottom margin */
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 16px);
+    box-sizing: border-box;
+  }
+  
+  
+
+  .pv button {
+    display: inline;
+    margin: auto;
+    width: 50%;
+    height: 2rem;
+    padding: 0 0.5rem;
+    margin-bottom: 2rem;
+    border-radius: .3rem;
+    border-color: black;
+    font-weight: 680;
+  }
+  
+  .pv button:hover {
+    background-color:  hsl(182, 58%, 55%);
+    border-color:  hsl(182, 58%, 55%);
+    color: white;
+  }

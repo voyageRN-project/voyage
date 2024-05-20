@@ -1,0 +1,82 @@
+.trip-container {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+   /* Center the day containers */
+}
+
+.day-container {
+  width: calc(33.33% - 20px); /* Adjust width calculation to allow centering */
+  margin-bottom: 20px; /* Reduce margin to create gap between day containers */
+  margin-right: 20px; /* Add right margin to create gap between day containers */
+  border: 1px solid black; /* Add a thin black border around each day container */
+  padding: 10px; /* Add padding to create space between border and content */
+  box-sizing: border-box;
+  position: relative; 
+/* Include padding and border in the width calculation */
+}
+.day-container h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: hsl(182, 58%, 55%);
+}
+
+.activity-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.activity-container h3{
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: hsl(181, 30%, 72%);
+}
+
+.morning,
+.afternoon,
+.evening {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.activity-container h4{
+  margin-bottom: 7px;
+  font-size: 1rem;
+  color: hsl(0, 0%, 0%);
+}
+
+.activity {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.recommendations {
+  margin-top: 20px;
+}
+
+.recommendations h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: hsl(181, 30%, 72%);
+}
+
+.recommendations ul {
+  list-style: none;
+  padding: 0;
+}
+
+.recommendations li {
+  margin-bottom: 5px;
+}
+
+/* Style restaurant and accommodation boxes */
+.recommendations li {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

@@ -1,0 +1,171 @@
+
+.hero {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
+
+
+.hero-mid{
+    width: 100%;
+    height: 70vh;
+    position: relative;
+}
+
+
+
+.hero-Small{
+    width: 100%;
+    height: 35vh;
+    position: relative;
+}
+
+.hero-Small-text{
+    position: absolute;
+    top: 72%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+.hero-Small-text h1{
+    font-size: 2rem;
+    font-weight: 700;
+    background: rgb(233, 225, 214);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;  
+}
+.hero-Small-text p{
+    font-size: 1rem;
+    padding-top: 0.6%;
+    font-weight: 700;
+    background: rgb(235, 205, 164);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;  
+}
+
+.hero-mid-text{
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+
+
+.hero-mid-text h1{
+    font-size: 4rem;
+    font-weight: 700;
+    background: whitesmoke;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;  
+}
+
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-text{
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+
+.hero-text h1{
+    font-size: 3rem;
+    font-weight: 650;
+    background: black;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-text p{
+    font-size: 1rem;
+    font-weight: 650;
+    color: black;
+    padding: 0.5rem 0 2rem 0;
+    
+}
+
+.hero-text .show {
+   text-decoration: none; 
+   background-color: whitesmoke;
+   padding: 0.8rem 1.6rem;
+   border-radius: 6px;
+   font-size: 1.1rem;
+   font-weight: bold;
+   letter-spacing: 1px;
+   color: black;
+}
+
+.hero-text .show:hover {
+    background-color:hsl(182, 58%, 55%) ;
+    color: whitesmoke;
+}
+
+ 
+.hero-text .hide {
+    display: none;
+}
+
+.hero-yourV-text{
+    position: absolute;
+    top: 72%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+.hero-yourV-text h1{
+    font-size: 4rem;
+    font-weight: 700;
+    background: rgb(233, 225, 214);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;  
+}
+.hero-yourV-text p{
+    font-size: 2rem;
+    padding-top: 0.6%;
+    font-weight: 700;
+    background: rgb(233, 225, 214);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;  
+}
+
+
+
+
+@media screen and (max-width: 555px){
+    .hero-text h1 {
+        padding: 10px 20px;
+    }
+    .hero-text p {
+        font-size: 1rem;
+        padding: 0 0 2rem 0;
+    }
+
+    .hero-text .show {
+        padding: 0.6rem 1.1rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        background-color: whitesmoke; 
+    }
+
+    .hero-yourV-text h1 {
+        padding: 10px 20px;
+    }
+    .hero-yourV-text p {
+        font-size: 1rem;
+        padding: 0 0 2rem 0;
+    }
+
+    .hero-yourV-text .show {
+        padding: 0.6rem 1.1rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        background-color: whitesmoke; 
+    }
+}

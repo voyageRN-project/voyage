@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.2f95b83e.css",
+    "main.js": "/static/js/main.9c331cd4.js",
+    "static/media/newyork.jpg": "/static/media/newyork.4dd5ade8832c574615aa.jpg",
+    "static/media/winery.jpg": "/static/media/winery.8efdb7dbeef6c2050d5e.jpg",
+    "static/media/boat.jpg": "/static/media/boat.15c1ce607bf16be49408.jpg",
+    "static/media/desert1.jpg": "/static/media/desert1.45e793ce08badd0db2f8.jpg",
+    "index.html": "/index.html",
+    "main.2f95b83e.css.map": "/static/css/main.2f95b83e.css.map",
+    "main.9c331cd4.js.map": "/static/js/main.9c331cd4.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2f95b83e.css",
+    "static/js/main.9c331cd4.js"
+  ]
+}
