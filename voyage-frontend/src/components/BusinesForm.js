@@ -113,15 +113,15 @@ function BusinesForm(){
           onChange={handleInputChange}
         />
         <select
-          className="Business Catagory"
+          className="Business Category"
           name="interestPoint"
           value={formData.interestPoint}
           onChange={handleInputChange}
         >
-          <option value="">Business Catagory</option>
+          <option value="">Business Category</option>
           <option value="Art venues">Art venues</option>
           <option value="Festivals">Festivals</option>
-          <option value="Tracks and hiking trails">Tracks and hiking trails</option>
+          <option value="Hiking trails">Hiking trails</option>
           <option value="Places to stay">Places to stay</option>
           <option value="Culinary">Culinary</option>
         </select>

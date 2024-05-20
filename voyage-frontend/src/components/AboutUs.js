@@ -6,7 +6,7 @@ const AboutUs = () => {
     <div className="about-section">
       <h2>Welcome to Our Platform</h2>
       <p>
-        At our website, we're redefining the way travelers plan and experience their vacations. With the aid of cutting-edge AI technology, users are empowered to craft their dream getaways down to the finest detail, ensuring each aspect aligns perfectly with their unique preferences and budget.
+        In our website, we're redefining the way travelers plan and experience their vacations. With the aid of cutting-edge AI technology, users are empowered to craft their dream getaways down to the finest detail, ensuring each aspect aligns perfectly with their unique preferences and budget.
       </p>
       <p>
         Our platform meticulously curates personalized itineraries that encompass a diverse array of activities, handpicked recommendations, and accommodation options, offering a comprehensive roadmap for an unforgettable journey.

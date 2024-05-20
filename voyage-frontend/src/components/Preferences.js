@@ -211,10 +211,10 @@ function Preferences() {
           <input
             type="checkbox"
             name="interests"
-            value="Tracks and hiking trails"
-            checked={preferences.interests.includes('Tracks and hiking trails')}
+            value="Hiking trails"
+            checked={preferences.interests.includes('Hiking trails')}
             onChange={handleCheckboxChange}
-          /> Tracks and hiking trails
+          /> Hiking trails
         </label>
         <label>
           <input
