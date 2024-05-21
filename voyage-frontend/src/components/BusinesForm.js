@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 
+
+let HOST_NAME = "http://localhost:8080";
+
 function BusinesForm(){
     const [countryOptions, setCountryOptions] = useState([]);
     const [formData, setFormData] = useState({
@@ -77,7 +80,7 @@ function BusinesForm(){
           formDataToSend.append('business_longitude', formData.longitude);
         
           // Send POST request with formDataToSend
-          const response = await axios.post("http://localhost:8080/add_business", formDataToSend, {
+          const response = await axios.post(HOST_NAME + "/api/v1/business_app/add_business", formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data" // Set Content-Type to multipart/form-data
             }

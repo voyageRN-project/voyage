@@ -4,7 +4,7 @@ import axios from 'axios';
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 
-
+let HOST_NAME = "http://localhost:8080";
 
 function Preferences() {
   const [countryOptions, setCountryOptions] = useState([]);
@@ -58,7 +58,7 @@ function Preferences() {
           formData.append("accommodation_type", preferences.accommodation);
       
           // Construct URL
-          const url = "http://localhost:8081/build_trip";
+          const url = HOST_NAME + "/api/v1/users_app/build_trip";
       
           // Create request options
           const requestOptions = {

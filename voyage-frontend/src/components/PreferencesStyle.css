@@ -1,11 +1,8 @@
 .preferences {
-    padding: 12rem 6rem;
-    background: rgb(255, 255, 255);
-    color: black;
-
+  padding: 12rem 6rem;
+  background: rgb(255, 255, 255);
+  color: black;
 }
-
-
 
 .loading {
   display: flex;
@@ -16,7 +13,7 @@
 
 .loading-text {
   font-size: 50px;
-  font-weight: bold; 
+  font-weight: bold;
   color:  hsl(182, 58%, 55%);
 }
 
@@ -29,18 +26,18 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  
-  
+
+
   .pv form {
     display: flex;
     flex-direction: column;
   }
-  
+
   .pvs label {
     margin-bottom: 10px;
     color: #666;
   }
-  
+
   .pv input[type="number"],
   .pv select,
   .pv input[type="checkbox"] {
@@ -48,17 +45,18 @@
     margin-top: 5px;
     border: 2px solid #ccc;
     border-radius: 4px;
-    width: calc(100% - 16px);
+    width: 100%;
     box-sizing: border-box;
+    color: hsl(182, 58%, 55%);
   }
-  
+
   .pv input[type="checkbox"] {
     padding-left: 20%;
     margin-top: 0;
     width: auto;
   }
 
-  
+
   .pv fieldset {
     border: none;
     padding: 10px;
@@ -69,37 +67,44 @@
     color: #444;
   }
 
-  .pv label {
-    display: inline-block;; /* Use flexbox to align checkbox and label */
-  align-items: center;
-  }
-
-  .pv input[type="checkbox"] {
-    padding: 8px;
-    margin-top: 10px; /* Increase top margin */
-    margin-bottom: 10px; /* Increase bottom margin */
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    width: calc(100% - 16px);
-    box-sizing: border-box;
-  }
-  
-  
-
   .pv button {
-    display: inline;
-    margin: auto;
+     display: block; /* Change to block for full width */
+    margin: 20px auto; /* Center the button */
     width: 50%;
     height: 2rem;
     padding: 0 0.5rem;
-    margin-bottom: 2rem;
     border-radius: .3rem;
-    border-color: black;
+    color: #444;
+    border: 2px solid black;
     font-weight: 680;
+}
+
+.pv button:hover {
+  background-color: hsl(182, 58%, 55%);
+  border-color: hsl(182, 58%, 55%);
+  color: white;
+}
+
+@media screen and (max-width: 768px) {
+  .preferences {
+    padding: 6rem 3rem;
   }
-  
-  .pv button:hover {
-    background-color:  hsl(182, 58%, 55%);
-    border-color:  hsl(182, 58%, 55%);
-    color: white;
+  .pv {
+    width: 100%;
+    padding: 10px;
   }
+  .pv input[type="number&quot"],
+  .pv select,
+  .pv input[type="checkbox"] {
+    width: calc(100% - 16px);
+  }
+
+ .pv button {
+   width: 80%;
+ }
+  .loading-text {
+    font-size: 25px;
+    font-weight: bold;
+    color: hsl(182, 58%, 55%);
+  }
+}
