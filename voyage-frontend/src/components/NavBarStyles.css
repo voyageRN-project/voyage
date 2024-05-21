@@ -86,8 +86,9 @@
     }
 
     .navbar-logo {
-        width: 18%;
-        height: 50%;
+        width: 80px;
+        height: auto;
+        margin-right: 15px;
         display: block;
         text-decoration: none;
         z-index: 1;
