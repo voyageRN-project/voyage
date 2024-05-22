@@ -9,7 +9,6 @@ from processors.response_builder import ResponseBuilder
 from helpers.error_handling import (MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty,
                                     CountryNameError, ConvertAIResponseToJsonError)
 from helpers.constants import NEW_TRIP_EXPECTED_REQUEST_PROPERTIES, NEW_TRIP_OPTIONAL_REQUEST_PROPERTIES
-from pydantic import Json
 from resources.generative_ai_resource import GenerativeAIResource
 from resources.mongo_db_resource import MongoDBResource
 from models.day_itinerary import DayItinerary
