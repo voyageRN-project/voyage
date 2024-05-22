@@ -1,0 +1,25 @@
+version: 1.0
+runtime: python311
+build:
+  commands:
+    build:
+      - pip3 install pipenv
+      - pipenv install
+      - pip3 install -vvv -r requirements.txt
+
+  env:
+    - name: GOOGLE_API_KEY
+      value: "AIzaSyAQP4QC0fJJB6tOmjZ-FV4YPSTR11rbJdQ"
+    - name: MONGO_PASSWORD
+      value: "NWnw130296!"
+run:
+  runtime-version: 3.11
+  command: python3 main.py
+  network:
+    port: 8080
+    env: MY_APP_PORT
+  env:
+    - name: GOOGLE_API_KEY
+      value: "AIzaSyAQP4QC0fJJB6tOmjZ-FV4YPSTR11rbJdQ"
+    - name: MONGO_PASSWORD
+      value: "NWnw130296!"
