@@ -2,7 +2,6 @@ import json
 from enum import Enum
 from typing import Any
 
-from pycountry_convert import country_alpha2_to_country_name
 from processors.data_validator import DataValidator
 from processors.prompt_builder import PromptBuilder
 from processors.response_builder import ResponseBuilder
@@ -13,6 +12,8 @@ from resources.generative_ai_resource import GenerativeAIResource
 from resources.mongo_db_resource import MongoDBResource
 from models.day_itinerary import DayItinerary
 from models.generated_trip import GeneratedTrip
+from pycountry_convert import country_alpha2_to_country_name
+
 
 import logging as logger
 
