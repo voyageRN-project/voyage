@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/app//voyage-backend')
+sys.path.append('/')
 from services.user_service import UserService
 from services.business_clients_service import BusinessService
 import traceback
@@ -5,6 +8,7 @@ from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
 from helpers.error_handling import MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
 import logging as logger
+
 
 logger.basicConfig(level=logger.INFO)
 
