@@ -6,9 +6,6 @@ from flask_cors import CORS
 from helpers.error_handling import MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty, ConvertAIResponseToJsonError
 import logging as logger
 
-import sys
-sys.path.append('/')
-
 logger.basicConfig(level=logger.INFO)
 
 
