@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../src")
+sys.path.append("/voyage-backend")
 
 from processors.prompt_builder import PromptBuilder
 import json

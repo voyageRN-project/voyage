@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../src")
+sys.path.append("/voyage-backend")
 
 from resources.mongo_db_resource import MongoDBResource
 import logging as logger

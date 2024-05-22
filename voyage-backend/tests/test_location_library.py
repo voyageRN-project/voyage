@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/voyage-backend")
+
 import json
 
 import geopy
