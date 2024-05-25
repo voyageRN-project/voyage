@@ -74,4 +74,3 @@ https://voyage-olive.vercel.app/
 
 # 
 Stay tuned, adventurers!  VOYAGE is almost ready to set sail and take you on an unforgettable vacation! bon voyage 🚢
-``` 
