@@ -1,4 +1,4 @@
 .vercel
 .voyage-backend/.env
 .idea
-apprunner.yaml
+.voyage-backend/apprunner.yaml
