@@ -1,10 +1,10 @@
 from pycountry_convert import country_alpha2_to_country_name
-from helpers.error_handling import CountryNameError
-from models.day_itinerary import DayItinerary
-from models.content import Content
-from models.generated_trip import GeneratedTrip
-from models.accommodation_recommendation import AccommodationRecommendation
-from models.restaurant_recommendation import RestaurantRecommendation
+from ..helpers.error_handling import CountryNameError
+from ..models.day_itinerary import DayItinerary
+from ..models.content import Content
+from ..models.generated_trip import GeneratedTrip
+from ..models.accommodation_recommendation import AccommodationRecommendation
+from ..models.restaurant_recommendation import RestaurantRecommendation
 
 
 class PromptBuilder:

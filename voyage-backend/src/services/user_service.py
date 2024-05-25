@@ -2,16 +2,16 @@ import json
 from enum import Enum
 from typing import Any
 
-from processors.data_validator import DataValidator
-from processors.prompt_builder import PromptBuilder
-from processors.response_builder import ResponseBuilder
-from helpers.error_handling import (MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty,
+from ..processors.data_validator import DataValidator
+from ..processors.prompt_builder import PromptBuilder
+from ..processors.response_builder import ResponseBuilder
+from ..helpers.error_handling import (MissingExpectedKeyInRequestBodyError, CouldNotGetValidResponseFromThirdParty,
                                     CountryNameError, ConvertAIResponseToJsonError)
-from helpers.constants import NEW_TRIP_EXPECTED_REQUEST_PROPERTIES, NEW_TRIP_OPTIONAL_REQUEST_PROPERTIES
-from resources.generative_ai_resource import GenerativeAIResource
-from resources.mongo_db_resource import MongoDBResource
-from models.day_itinerary import DayItinerary
-from models.generated_trip import GeneratedTrip
+from ..helpers.constants import NEW_TRIP_EXPECTED_REQUEST_PROPERTIES, NEW_TRIP_OPTIONAL_REQUEST_PROPERTIES
+from ..resources.generative_ai_resource import GenerativeAIResource
+from ..resources.mongo_db_resource import MongoDBResource
+from ..models.day_itinerary import DayItinerary
+from ..models.generated_trip import GeneratedTrip
 from pycountry_convert import country_alpha2_to_country_name
 
 

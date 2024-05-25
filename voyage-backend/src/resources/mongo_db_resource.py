@@ -2,7 +2,7 @@ from typing import Any
 
 from pymongo.mongo_client import MongoClient
 from dotenv import load_dotenv
-from helpers.error_handling import MongoConnectionError
+from ..helpers.error_handling import MongoConnectionError
 import os
 import logging as logger
 

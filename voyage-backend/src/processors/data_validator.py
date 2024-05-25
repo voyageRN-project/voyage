@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Union, Any
-from helpers.error_handling import ThirdPartyDataValidatorError
-from helpers.error_handling import CountryNameError
+from ..helpers.error_handling import ThirdPartyDataValidatorError
+from ..helpers.error_handling import CountryNameError
 from geopy.geocoders import Nominatim
 import requests
 import json

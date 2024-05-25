@@ -1,11 +1,11 @@
 from typing import Any
-from processors.data_validator import DataValidator
-from resources.mongo_db_resource import MongoDBResource
-from processors.response_builder import ResponseBuilder
-from helpers.constants import NEW_BUSINESS_EXPECTED_REQUEST_PROPERTIES, NEW_BUSINESS_OPTIONAL_REQUEST_PROPERTIES
-from helpers.error_handling import MissingExpectedKeyInRequestBodyError, CountryNameError
-from models.client_data import ClientData
-from models.business_data import BusinessData
+from ..processors.data_validator import DataValidator
+from ..resources.mongo_db_resource import MongoDBResource
+from ..processors.response_builder import ResponseBuilder
+from ..helpers.constants import NEW_BUSINESS_EXPECTED_REQUEST_PROPERTIES, NEW_BUSINESS_OPTIONAL_REQUEST_PROPERTIES
+from ..helpers.error_handling import MissingExpectedKeyInRequestBodyError, CountryNameError
+from ..models.client_data import ClientData
+from ..models.business_data import BusinessData
 
 import logging as logger
 
@@ -61,7 +61,7 @@ class BusinessService:
                                  credits_bought=int(self.request_body["credits_bought"]))
         return self.db_resource.add_new_business_client(client_data.dict())
 
-    def add_new_business(self) -> 'ResponseBuilder':
+    def add_new_business(self) -> dict[str, Any]:
         logger.info(f"BusinessService: add new business method called with headers: {self.request_body}\n")
         # first - validate that all the expected headers exist in the request
         try:

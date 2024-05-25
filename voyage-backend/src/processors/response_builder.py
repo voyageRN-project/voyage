@@ -1,5 +1,5 @@
 from typing import Any
-from models.generated_trip import GeneratedTrip
+from ..models.generated_trip import GeneratedTrip
 
 
 class ResponseBuilder:
