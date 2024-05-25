@@ -1,6 +1,6 @@
 import pytest
 import sys
-sys.path.append("/voyage-backend")
+sys.path.append("../src")
 
 from resources.generative_ai_resource import GenerativeAIResource
 from processors.prompt_builder import PromptBuilder
