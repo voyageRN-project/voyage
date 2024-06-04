@@ -3,6 +3,7 @@ from typing import Union, Any
 from ..helpers.error_handling import ThirdPartyDataValidatorError
 from ..helpers.error_handling import CountryNameError
 from geopy.geocoders import Nominatim
+import reverse_geocoder as rg
 import requests
 import json
 import geopy
@@ -42,7 +43,15 @@ class DataValidator:
     def verify_long_lat_in_country(self, longitude: str, latitude: str, c_name: str) -> bool:
         c_code = self.get_country_code(c_name)
         location = geopy.point.Point(float(latitude), float(longitude))
-        res = self.geo_locator.reverse(location)
+        try:
+            res = self.geo_locator.reverse(location)
+        except Exception as e:
+            logger.error(f"Could not get location from the third party location validator: {str(e)}, returning true "
+                         f"to proceed")
+            coordinates = (float(latitude), float(longitude))
+            results = rg.search(coordinates)
+            if c_code.lower() not in results[0]['cc'].lower():
+                return False
         if c_code.lower() not in res.raw['address']['country_code'].lower():
             return False
         return True
