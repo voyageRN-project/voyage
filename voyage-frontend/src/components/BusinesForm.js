@@ -1,106 +1,121 @@
-import "./BusinesFormStyle.css";
-import select from "react-dropdown-select";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
+import "./BusinesFormStyle.css";
 
+function BusinesForm() {
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [notification, setNotification] = useState({ message: "", type: "" }); // State for notification message
+  const [formData, setFormData] = useState({
+    businessName: "",
+    businessNumber: "",
+    businessType: "",
+    businessDescription: "",
+    country: "",
+    email: "",
+    contactPersonName: "",
+    contactPersonNumber: "",
+    voyageCredit: "",
+    latitude: "",
+    longitude: "",
+    interestPoint: "", // Added interestPoint to formData
+  });
 
-let HOST_NAME = "http://localhost:8080";
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get("https://countriesnow.space/api/v0.1/countries");
+        const countries = response.data.data.map(country => ({
+          value: country.country,
+          label: country.country
+        }));
+        setCountryOptions(countries);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
 
-function BusinesForm(){
-    const [countryOptions, setCountryOptions] = useState([]);
-    const [formData, setFormData] = useState({
-      businessName: "",
-      businessNumber: "",
-      businessType: "",
-      businessDescription: "",
-      country: "",
-      email: "",
-      contactPersonName: "",
-      contactPersonNumber: "",
-      voyageCredit: "",
-      latitude: "", // Add latitude field
-      longitude: "", // Add longitude field
+    fetchCountries();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
+  };
 
-    useEffect(() => {
-        const fetchCountries = async () => {
-          try {
-            const response = await axios.get("https://countriesnow.space/api/v0.1/countries");
-            console.log("Response data:", response.data); // Log the response data
-            const countries = response.data.data.map(country => ({
-                value: country.country,
-                label: country.country
-            }));
-            console.log("Countries:", countries); // Log the countries
-            setCountryOptions(countries);
-          } catch (error) {
-            console.error("Error fetching countries:", error);
-          }
-        };
-      
-        fetchCountries();
-      }, []);
+  const handleSelectChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      country: selectedOption.value,
+    });
+  };
 
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification({ message: "", type: "" });
+    }, 3000); // Hide notification after 3 seconds
+  };
 
-      const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
-      };
-    
-      const handleSelectChange = (selectedOption) => {
-        setFormData({
-          ...formData,
-          country: selectedOption.value,
-        });
-      };
-    
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('business_name', formData.businessName);
+      formDataToSend.append('business_type', formData.businessType);
+      formDataToSend.append('business_phone', formData.businessNumber);
+      formDataToSend.append('business_email', formData.email);
+      formDataToSend.append('business_country', formData.country);
+      formDataToSend.append('business_contact_person', formData.contactPersonName);
+      formDataToSend.append('business_contact_person_phone', formData.contactPersonNumber);
+      formDataToSend.append('credits_bought', formData.voyageCredit);
+      formDataToSend.append('business_match_interest_points', formData.interestPoint);
+      formDataToSend.append('business_description', formData.businessDescription);
+      formDataToSend.append('business_latitude', formData.latitude);
+      formDataToSend.append('business_longitude', formData.longitude);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-          const formDataToSend = new FormData();
-          formDataToSend.append('business_name', formData.businessName);
-          formDataToSend.append('business_type', formData.businessType);
-          formDataToSend.append('business_phone', formData.businessNumber);
-          formDataToSend.append('business_email', formData.email);
-          formDataToSend.append('business_country', formData.country);
-          formDataToSend.append('business_contact_person', formData.contactPersonName);
-          formDataToSend.append('business_contact_person_phone', formData.contactPersonNumber);
-          formDataToSend.append('credits_bought', formData.voyageCredit); 
-          formDataToSend.append('business_match_interest_points', formData.interestPoint); 
-          formDataToSend.append('business_description', formData.businessDescription);
-        
-          // Optionally, add latitude and longitude fields if needed
-          formDataToSend.append('business_latitude', formData.latitude);
-          formDataToSend.append('business_longitude', formData.longitude);
-        
-          // Send POST request with formDataToSend
-          const response = await axios.post(HOST_NAME + "/api/v1/business_app/add_business", formDataToSend, {
-            headers: {
-              "Content-Type": "multipart/form-data" // Set Content-Type to multipart/form-data
-            }
-          });
-        
-          console.log("Response from backend:", response.data);
-          // Optionally, you can reset the form fields after successful submission
-          // Reset formData here if needed
-        
-        } catch (error) {
-          console.error("Error submitting form data:", error);
-          // Handle error condition
+      const response = await axios.post("http://localhost:8080/add_business", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      };
+      });
 
-    return(
-        <div className="from-container">
-            <h1>YOUR BUSINESS | THEIR VOYAGE</h1>
-            <p>LET'S START</p>
-            <form onSubmit={handleSubmit}>
+      console.log("Response from backend:", response.data);
+      showNotification("Business added successfully!"); // Show success notification
+
+      // Optionally, reset the form fields
+      setFormData({
+        businessName: "",
+        businessNumber: "",
+        businessType: "",
+        businessDescription: "",
+        country: "",
+        email: "",
+        contactPersonName: "",
+        contactPersonNumber: "",
+        voyageCredit: "",
+        latitude: "",
+        longitude: "",
+        interestPoint: "",
+      });
+
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      showNotification("Error adding business. Please try again.", "error"); // Show error notification
+    }
+  };
+
+  return (
+    <div className="from-container">
+      <h1>YOUR BUSINESS | THEIR VOYAGE</h1>
+      <p>LET'S START</p>
+      <div className={`notification ${notification.type} ${notification.message ? "show" : ""}`}>
+        {notification.message}
+      </div>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="businessName"
@@ -115,24 +130,24 @@ function BusinesForm(){
           value={formData.businessNumber}
           onChange={handleInputChange}
         />
-                <select
-                    className="Business Category"
-                    name="interestPoint"
-                    value={formData.interestPoint}
-                    onChange={handleInputChange}
-                >
-                    <option value="">Business Category</option>
-                    <option value="Art venues">Art venues</option>
-                    <option value="Festivals">Festivals</option>
-                    <option value="Hiking trails">Hiking trails</option>
-                    <option value="Places to stay">Places to stay</option>
-                    <option value="Winery">Winery</option>
-                    <option value="Nature">Nature</option>
-                    <option value="Culinary">Culinary</option>
-                </select>
-                <select
-                    className="Type"
-                    name="businessType"
+        <select
+          className="Business Catagory"
+          name="interestPoint"
+          value={formData.interestPoint}
+          onChange={handleInputChange}
+        >
+          <option value="">Business Category</option>
+          <option value="Art venues">Art venues</option>
+          <option value="Festivals">Festivals</option>
+          <option value="Hiking trails">Hiking trails</option>
+          <option value="Places to stay">Places to stay</option>
+          <option value="Winery">Winery</option>
+          <option value="Nature">Nature</option>
+          <option value="Culinary">Culinary</option>
+        </select>
+        <select
+          className="Type"
+          name="businessType"
           value={formData.businessType}
           onChange={handleInputChange}
         >
@@ -199,7 +214,6 @@ function BusinesForm(){
           value={formData.contactPersonNumber}
           onChange={handleInputChange}
         />
-     
         <input
           type="text"
           name="voyageCredit"
