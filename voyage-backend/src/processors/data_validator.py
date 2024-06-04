@@ -42,7 +42,12 @@ class DataValidator:
     def verify_long_lat_in_country(self, longitude: str, latitude: str, c_name: str) -> bool:
         c_code = self.get_country_code(c_name)
         location = geopy.point.Point(float(latitude), float(longitude))
-        res = self.geo_locator.reverse(location)
+        try:
+            res = self.geo_locator.reverse(location)
+        except Exception as e:
+            logger.error(f"Could not get location from the third party location validator: {str(e)}, returning true "
+                         f"to proceed")
+            return True
         if c_code.lower() not in res.raw['address']['country_code'].lower():
             return False
         return True
