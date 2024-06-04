@@ -187,60 +187,78 @@ function Preferences() {
           <option value="Farm House">Farm house</option>
         </select>
 
-      <fieldset>
-        <legend>Choose your points of interest:</legend>
-        <label>
-          <input
-            type="checkbox"
-            name="interests"
-            value="Art venues"
-            checked={preferences.interests.includes('Art venues')}
-            onChange={handleCheckboxChange}
-          /> Art venues
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="interests"
-            value="Festivals"
-            checked={preferences.interests.includes('Festivals')}
-            onChange={handleCheckboxChange}
-          /> Festivals
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="interests"
-            value="Hiking trails"
-            checked={preferences.interests.includes('Hiking trails')}
-            onChange={handleCheckboxChange}
-          /> Hiking trails
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="interests"
-            value="Places to stay"
-            checked={preferences.interests.includes('Places to stay')}
-            onChange={handleCheckboxChange}
-          /> Places to stay
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="interests"
-            value="Culinary"
-            checked={preferences.interests.includes('Culinary')}
-            onChange={handleCheckboxChange}
-          /> Culinary
-        </label>
-      </fieldset>
-      <br />
-      <button type="submit">Submit Preferences</button>
-    
-    </form>
-    )}
-    </div>
+            <fieldset>
+                <legend>Choose your points of interest:</legend>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Art venues"
+                        checked={preferences.interests.includes('Art venues')}
+                        onChange={handleCheckboxChange}
+                    /> Art venues
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Festivals"
+                        checked={preferences.interests.includes('Festivals')}
+                        onChange={handleCheckboxChange}
+                    /> Festivals
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Hiking trails"
+                        checked={preferences.interests.includes('Hiking trails')}
+                        onChange={handleCheckboxChange}
+                    /> Hiking trails
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Places to stay"
+                        checked={preferences.interests.includes('Places to stay')}
+                        onChange={handleCheckboxChange}
+                    /> Places to stay
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Culinary"
+                        checked={preferences.interests.includes('Culinary')}
+                        onChange={handleCheckboxChange}
+                    /> Culinary
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Winery"
+                        checked={preferences.interests.includes('Winery')}
+                        onChange={handleCheckboxChange}
+                    /> Winery
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="interests"
+                        value="Nature"
+                        checked={preferences.interests.includes('Nature')}
+                        onChange={handleCheckboxChange}
+                    /> Nature
+                </label>
+            </fieldset>
+            <br/>
+            <button type="submit">Submit Preferences</button>
+
+        </form>
+           )}
+        </div>
     );
 }
 

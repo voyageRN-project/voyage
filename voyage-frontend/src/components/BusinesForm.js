@@ -115,22 +115,24 @@ function BusinesForm(){
           value={formData.businessNumber}
           onChange={handleInputChange}
         />
-        <select
-          className="Business Category"
-          name="interestPoint"
-          value={formData.interestPoint}
-          onChange={handleInputChange}
-        >
-          <option value="">Business Category</option>
-          <option value="Art venues">Art venues</option>
-          <option value="Festivals">Festivals</option>
-          <option value="Hiking trails">Hiking trails</option>
-          <option value="Places to stay">Places to stay</option>
-          <option value="Culinary">Culinary</option>
-        </select>
-        <select
-          className="Type"
-          name="businessType"
+                <select
+                    className="Business Category"
+                    name="interestPoint"
+                    value={formData.interestPoint}
+                    onChange={handleInputChange}
+                >
+                    <option value="">Business Category</option>
+                    <option value="Art venues">Art venues</option>
+                    <option value="Festivals">Festivals</option>
+                    <option value="Hiking trails">Hiking trails</option>
+                    <option value="Places to stay">Places to stay</option>
+                    <option value="Winery">Winery</option>
+                    <option value="Nature">Nature</option>
+                    <option value="Culinary">Culinary</option>
+                </select>
+                <select
+                    className="Type"
+                    name="businessType"
           value={formData.businessType}
           onChange={handleInputChange}
         >
