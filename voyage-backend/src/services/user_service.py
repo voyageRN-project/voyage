@@ -280,6 +280,7 @@ class UserService:
                 ready_prompt = (self.prompt_builder
                                 .with_error_identification(self.data_validator.errors))
             ready_prompt = ready_prompt.build()
+            logger.info(f"UsersService: got prompt: {ready_prompt}\n")
             # generate response from the generative AI
             generative_ai_resource = GenerativeAIResource(ready_prompt)
             raw_itinerary = generative_ai_resource.get_generative_ai_response()

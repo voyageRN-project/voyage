@@ -38,7 +38,7 @@ function BusinesForm(){
             console.error("Error fetching countries:", error);
           }
         };
-      
+
         fetchCountries();
       }, []);
 
@@ -50,15 +50,15 @@ function BusinesForm(){
           [name]: value,
         });
       };
-    
+
       const handleSelectChange = (selectedOption) => {
         setFormData({
           ...formData,
           country: selectedOption.value,
         });
       };
-    
-    
+
+
 
       const handleSubmit = async (e) => {
         e.preventDefault();
@@ -71,25 +71,25 @@ function BusinesForm(){
           formDataToSend.append('business_country', formData.country);
           formDataToSend.append('business_contact_person', formData.contactPersonName);
           formDataToSend.append('business_contact_person_phone', formData.contactPersonNumber);
-          formDataToSend.append('credits_bought', formData.voyageCredit); 
-          formDataToSend.append('business_match_interest_points', formData.interestPoint); 
+          formDataToSend.append('credits_bought', formData.voyageCredit);
+          formDataToSend.append('business_match_interest_points', formData.interestPoint);
           formDataToSend.append('business_description', formData.businessDescription);
-        
+
           // Optionally, add latitude and longitude fields if needed
           formDataToSend.append('business_latitude', formData.latitude);
           formDataToSend.append('business_longitude', formData.longitude);
-        
+
           // Send POST request with formDataToSend
           const response = await axios.post(HOST_NAME + "/api/v1/business_app/add_business", formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data" // Set Content-Type to multipart/form-data
             }
           });
-        
+
           console.log("Response from backend:", response.data);
           // Optionally, you can reset the form fields after successful submission
           // Reset formData here if needed
-        
+
         } catch (error) {
           console.error("Error submitting form data:", error);
           // Handle error condition
@@ -199,7 +199,7 @@ function BusinesForm(){
           value={formData.contactPersonNumber}
           onChange={handleInputChange}
         />
-     
+
         <input
           type="text"
           name="voyageCredit"
