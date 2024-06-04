@@ -1,5 +1,8 @@
 from enum import Enum
 from typing import Union, Any
+
+from geopy.exc import GeocoderUnavailable
+
 from ..helpers.error_handling import ThirdPartyDataValidatorError
 from ..helpers.error_handling import CountryNameError
 from geopy.geocoders import Nominatim
@@ -42,7 +45,12 @@ class DataValidator:
     def verify_long_lat_in_country(self, longitude: str, latitude: str, c_name: str) -> bool:
         c_code = self.get_country_code(c_name)
         location = geopy.point.Point(float(latitude), float(longitude))
-        res = self.geo_locator.reverse(location)
+        try:
+            res = self.geo_locator.reverse(location)
+        except GeocoderUnavailable as e:
+            logger.error(f"Could not get response from third party location validator, error: {str(e)}")
+        except Exception as e:
+            logger.error(f"Could not get response from third party location validator, error: {str(e)}")
         if c_code.lower() not in res.raw['address']['country_code'].lower():
             return False
         return True
@@ -218,7 +226,8 @@ class DataValidator:
         :return: True if all the fields in the json raw itinerary contain data, False otherwise."""
 
         if len(json_raw_itinerary['trip_itinerary']) != requested_days:
-            self.errors[f"invalid json format: got incorrect number of itinerary days."] = errorsType.INVALID_FORMAT.value
+            self.errors[
+                f"invalid json format: got incorrect number of itinerary days."] = errorsType.INVALID_FORMAT.value
             return False
         for day_itinerary in json_raw_itinerary['trip_itinerary']:
             if not self.verify_all_fields_contain_data_in_day_itinerary(day_itinerary):
